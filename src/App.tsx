@@ -3,13 +3,14 @@ import { Link, Outlet } from 'react-router-dom';
 
 import { AppContext } from './app-context';
 
-import { ResponseStatus } from './types';
+import { Car, ResponseStatus } from './types';
 
 export const App = () => {
   const [responseStatus, setResponseStatus] = useState<ResponseStatus | null>(
     null
   );
   const [message, setMessage] = useState<string | null>(null);
+  const [selectedCar, setSelectedCar] = useState<Car | null>(null);
 
   useEffect(() => {
     if (!responseStatus) {
@@ -24,7 +25,14 @@ export const App = () => {
 
   return (
     <AppContext.Provider
-      value={{ responseStatus, message, setResponseStatus, setMessage }}
+      value={{
+        responseStatus,
+        message,
+        setResponseStatus,
+        setMessage,
+        selectedCar,
+        setSelectedCar,
+      }}
     >
       <h1>Async Race</h1>
       <Link to="/garage">To garage</Link>

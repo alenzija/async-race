@@ -2,10 +2,11 @@ import {
   ChangeEventHandler,
   FormEventHandler,
   useContext,
+  useEffect,
   useState,
 } from 'react';
 
-import { BasicCar, Car } from '../../types';
+import { Car } from '../../types';
 
 import { AppContext } from '../../app-context';
 
@@ -15,7 +16,8 @@ type CarFormProps = {
   buttonTitle: 'Update' | 'Create';
   colorId: string;
   nameId: string;
-  submitAction: (data: BasicCar) => Promise<Car>;
+  submitAction: (data: Car) => Promise<Car>;
+  defaultValue?: boolean;
 };
 
 export const CarForm: React.FC<CarFormProps> = ({
@@ -23,10 +25,18 @@ export const CarForm: React.FC<CarFormProps> = ({
   colorId,
   nameId,
   submitAction,
+  defaultValue,
 }) => {
+  const { selectedCar, setMessage, setResponseStatus } = useContext(AppContext);
   const [name, setName] = useState('');
   const [color, setColor] = useState('#000000');
-  const { setMessage, setResponseStatus } = useContext(AppContext);
+
+  useEffect(() => {
+    if (defaultValue && selectedCar) {
+      setName(selectedCar.name);
+      setColor(selectedCar.color);
+    }
+  }, [selectedCar, defaultValue]);
 
   const onNameChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     setName(e.target.value);
@@ -41,10 +51,14 @@ export const CarForm: React.FC<CarFormProps> = ({
     if (!name || name === '') {
       return;
     }
-    submitAction({ name, color })
+    submitAction({
+      id: defaultValue && selectedCar ? selectedCar.id : undefined,
+      name,
+      color,
+    })
       .then(() => {
         setResponseStatus('success');
-        setMessage('Car was successfully created');
+        setMessage(`Car was successfully ${buttonTitle.toLowerCase()}d`);
       })
       .catch(() => {
         setResponseStatus('error');

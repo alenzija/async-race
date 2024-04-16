@@ -5,10 +5,11 @@ import { CarForm } from '../../components/car-form';
 import { Spinner } from '../../components/spinner';
 import { CarList } from '../../components/car-list';
 
+import { garageService } from '../../services/garage-service';
+
 import { Car } from '../../types';
 
 import './garage.scss';
-import { garageService } from '../../services/garage-service';
 
 export const Garage = () => {
   const data = useLoaderData() as {
@@ -31,8 +32,8 @@ export const Garage = () => {
           buttonTitle="Update"
           nameId="update-car-name"
           colorId="update-car-color"
-          // change to updateCar method
-          submitAction={garageService.createCar}
+          defaultValue
+          submitAction={garageService.updateCar}
         />
         <button type="button">Generate cars</button>
       </div>
