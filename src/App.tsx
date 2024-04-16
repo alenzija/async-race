@@ -4,8 +4,8 @@ export const App = () => {
   return (
     <>
       <h1>Async Race</h1>
-      <Link to="/garage">Garage</Link>
-      <Link to="/winners">Winners</Link>
+      <Link to="/garage">To garage</Link>
+      <Link to="/winners">To winners</Link>
       <Outlet />
     </>
   );
