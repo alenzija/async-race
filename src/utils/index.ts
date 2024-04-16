@@ -1,0 +1,1 @@
+export { generateRandomCar } from './generateRandomCar';

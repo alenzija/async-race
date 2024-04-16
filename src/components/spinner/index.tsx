@@ -1,10 +1,14 @@
-export const Spinner = () => {
+type SpinnerProps = {
+  width?: string;
+};
+
+export const Spinner: React.FC<SpinnerProps> = ({ width = '200px' }) => {
   return (
     <div className="spinner">
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        width="200px"
-        height="200px"
+        width={width}
+        height={width}
         viewBox="0 0 100 100"
         preserveAspectRatio="xMidYMid"
       >

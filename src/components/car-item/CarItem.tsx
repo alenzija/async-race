@@ -1,6 +1,7 @@
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 
 import { CarIcon } from '../../shared/CarIcon';
+import { Spinner } from '../spinner';
 
 import { AppContext } from '../../app-context';
 
@@ -17,11 +18,13 @@ type CarItemProps = {
 export const CarItem: React.FC<CarItemProps> = ({ car }) => {
   const { setResponseStatus, setMessage, setSelectedCar } =
     useContext(AppContext);
+  const [loading, setLoading] = useState(false);
 
   const onDelete = () => {
     if (!car.id) {
       return;
     }
+    setLoading(true);
     garageService
       .deleteCar(car.id)
       .then(() => {
@@ -31,6 +34,9 @@ export const CarItem: React.FC<CarItemProps> = ({ car }) => {
       .catch(() => {
         setResponseStatus('error');
         setMessage('Something went wrong');
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
@@ -39,15 +45,16 @@ export const CarItem: React.FC<CarItemProps> = ({ car }) => {
   };
 
   return (
-    <>
-      <div>{car.name}</div>
-      <CarIcon color={car.color} />
+    <div>
       <button type="button" onClick={onDelete}>
-        Remove
+        {loading ? <Spinner width="30px" /> : 'Remove'}
       </button>
       <button type="button" onClick={onSelect}>
         Select
       </button>
-    </>
+      <div>{car.name}</div>
+      <CarIcon color={car.color} />
+      <div>..........</div>
+    </div>
   );
 };

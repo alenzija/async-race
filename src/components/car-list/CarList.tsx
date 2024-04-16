@@ -1,13 +1,18 @@
+import { useContext, useEffect, useState } from 'react';
 import { defer } from 'react-router-dom';
 import { DeferredData } from '@remix-run/router/dist/utils';
+
+import { CarItem } from '../car-item';
+
+import { useGetPage } from '../../hooks/useGetPage';
+
+import { AppContext } from '../../app-context';
+
 import { garageService } from '../../services/garage-service';
 
-import './car-list.scss';
 import { Car } from '../../types';
-import { CarItem } from '../car-item';
-import { useContext, useEffect, useState } from 'react';
-import { AppContext } from '../../app-context';
-import { useGetPage } from '../../hooks/useGetPage';
+
+import './car-list.scss';
 
 const SHOWED_ITEMS = 7;
 
@@ -32,6 +37,7 @@ type CarListProps = {
 
 export const CarList: React.FC<CarListProps> = ({ cars, count }) => {
   const [carList, setCarList] = useState(cars);
+  const [carsCount, setCarsCount] = useState(count);
   const { responseStatus } = useContext(AppContext);
 
   const page = useGetPage();
@@ -42,7 +48,10 @@ export const CarList: React.FC<CarListProps> = ({ cars, count }) => {
     }
     garageService
       .getCars({ pageNumber: page, limit: SHOWED_ITEMS })
-      .then(({ data }) => setCarList(data));
+      .then(({ data, count }) => {
+        setCarList(data);
+        setCarsCount(count);
+      });
   }, [page, responseStatus]);
 
   if (!cars) {
@@ -50,7 +59,7 @@ export const CarList: React.FC<CarListProps> = ({ cars, count }) => {
   }
   return (
     <>
-      <h3>{`Garage (${count})`}</h3>
+      <h3>{`Garage (${carsCount})`}</h3>
       <div>
         {carList.map((car) => (
           <CarItem key={car.id} car={car} />

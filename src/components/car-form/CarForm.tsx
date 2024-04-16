@@ -6,6 +6,8 @@ import {
   useState,
 } from 'react';
 
+import { Spinner } from '../spinner';
+
 import { Car } from '../../types';
 
 import { AppContext } from '../../app-context';
@@ -30,6 +32,7 @@ export const CarForm: React.FC<CarFormProps> = ({
   const { selectedCar, setMessage, setResponseStatus } = useContext(AppContext);
   const [name, setName] = useState('');
   const [color, setColor] = useState('#000000');
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (defaultValue && selectedCar) {
@@ -51,6 +54,7 @@ export const CarForm: React.FC<CarFormProps> = ({
     if (!name || name === '') {
       return;
     }
+    setLoading(true);
     submitAction({
       id: defaultValue && selectedCar ? selectedCar.id : undefined,
       name,
@@ -67,6 +71,7 @@ export const CarForm: React.FC<CarFormProps> = ({
       .finally(() => {
         setColor('#000000');
         setName('');
+        setLoading(false);
       });
   };
 
@@ -86,7 +91,12 @@ export const CarForm: React.FC<CarFormProps> = ({
         id={colorId}
         onChange={onColorChange}
       />
-      <button type="submit">{buttonTitle}</button>
+      <button
+        type="submit"
+        disabled={(defaultValue && !selectedCar) || !name || name === ''}
+      >
+        {loading ? <Spinner width="30px" /> : buttonTitle}
+      </button>
     </form>
   );
 };
