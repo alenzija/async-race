@@ -1,4 +1,4 @@
-import { defer, useSearchParams } from 'react-router-dom';
+import { defer } from 'react-router-dom';
 import { DeferredData } from '@remix-run/router/dist/utils';
 import { garageService } from '../../services/garage-service';
 
@@ -7,8 +7,9 @@ import { Car } from '../../types';
 import { CarItem } from '../car-item';
 import { useContext, useEffect, useState } from 'react';
 import { AppContext } from '../../app-context';
+import { useGetPage } from '../../hooks/useGetPage';
 
-const SHOWED_ITEMS = 10;
+const SHOWED_ITEMS = 7;
 
 export const garageLoader = async ({
   request,
@@ -26,15 +27,14 @@ export const garageLoader = async ({
 
 type CarListProps = {
   cars: Car[];
+  count: number;
 };
 
-export const CarList: React.FC<CarListProps> = ({ cars }) => {
+export const CarList: React.FC<CarListProps> = ({ cars, count }) => {
   const [carList, setCarList] = useState(cars);
-  const [searchParams] = useSearchParams();
   const { responseStatus } = useContext(AppContext);
 
-  const hasPage = searchParams.get('page');
-  const page = hasPage ? +hasPage : 1;
+  const page = useGetPage();
 
   useEffect(() => {
     if (!responseStatus) {
@@ -49,10 +49,13 @@ export const CarList: React.FC<CarListProps> = ({ cars }) => {
     return null;
   }
   return (
-    <div>
-      {carList.map((car) => (
-        <CarItem key={car.id} car={car} />
-      ))}
-    </div>
+    <>
+      <h3>{`Garage (${count})`}</h3>
+      <div>
+        {carList.map((car) => (
+          <CarItem key={car.id} car={car} />
+        ))}
+      </div>
+    </>
   );
 };

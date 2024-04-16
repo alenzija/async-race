@@ -38,7 +38,7 @@ export const Garage = () => {
       </div>
       <Suspense fallback={<Spinner />}>
         <Await resolve={data.res}>
-          {(response) => <CarList cars={response.data} />}
+          {(res) => <CarList cars={res.data} count={res.count} />}
         </Await>
       </Suspense>
     </>

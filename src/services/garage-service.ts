@@ -22,6 +22,10 @@ class GarageService {
     const data = await res.json() as Car;
     return data;
   };
+
+  public deleteCar = async (id: number): Promise<void> => {
+    await fetch(`${this.url}/${id}?id=${id}`, { method: 'DELETE' });
+  };
 };
 
 export const garageService = new GarageService();
