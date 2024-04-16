@@ -4,7 +4,6 @@ import { Await, useLoaderData } from 'react-router-dom';
 import { CarForm } from '../../components/car-form';
 import { Spinner } from '../../components/spinner';
 import { CarList } from '../../components/car-list';
-import { ErrorMessage } from '../../components/error-message';
 
 import { Car } from '../../types';
 
@@ -35,15 +34,7 @@ export const Garage = () => {
       </div>
       <Suspense fallback={<Spinner />}>
         <Await resolve={data.res}>
-          {(response) => {
-            return !response ? (
-              <ErrorMessage />
-            ) : (
-              <>
-                <CarList cars={response.data} />
-              </>
-            );
-          }}
+          {(response) => <CarList cars={response.data} />}
         </Await>
       </Suspense>
     </>

@@ -1,6 +1,14 @@
-.error-message {
-  display: block;
-  width: 50%;
-  object-fit: contain;
-  margin: 10px auto;
+.error {
+  width: 100%;
+
+  &-img {
+    display: block;
+    width: 50%;
+    margin: 10px auto;
+    object-fit: contain;
+  }
+
+  &-message {
+    text-align: center;
+  }
 }
