@@ -1,4 +1,4 @@
-import { Car } from '../types';
+import { BasicCar, Car } from '../types';
 
 class GarageService {
   private readonly url = 'http://127.0.0.1:3000/garage';
@@ -15,6 +15,12 @@ class GarageService {
     const count = Number(res.headers.get('X-Total-Count'));
   
     return { count, data };
+  };
+
+  public createCar = async (body: BasicCar): Promise<Car> => {
+    const res = await fetch(this.url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    const data = await res.json() as Car;
+    return data;
   };
 };
 

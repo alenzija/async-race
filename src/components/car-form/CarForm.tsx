@@ -1,4 +1,13 @@
-import { ChangeEventHandler, FormEventHandler, useState } from 'react';
+import {
+  ChangeEventHandler,
+  FormEventHandler,
+  useContext,
+  useState,
+} from 'react';
+
+import { BasicCar, Car } from '../../types';
+
+import { AppContext } from '../../app-context';
 
 import './car-form.scss';
 
@@ -6,15 +15,18 @@ type CarFormProps = {
   buttonTitle: 'Update' | 'Create';
   colorId: string;
   nameId: string;
+  submitAction: (data: BasicCar) => Promise<Car>;
 };
 
 export const CarForm: React.FC<CarFormProps> = ({
   buttonTitle,
   colorId,
   nameId,
+  submitAction,
 }) => {
   const [name, setName] = useState('');
   const [color, setColor] = useState('#000000');
+  const { setMessage, setResponseStatus } = useContext(AppContext);
 
   const onNameChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     setName(e.target.value);
@@ -29,7 +41,19 @@ export const CarForm: React.FC<CarFormProps> = ({
     if (!name || name === '') {
       return;
     }
-    console.log(name, color);
+    submitAction({ name, color })
+      .then(() => {
+        setResponseStatus('success');
+        setMessage('Car was successfully created');
+      })
+      .catch(() => {
+        setResponseStatus('error');
+        setMessage('Something went wrong');
+      })
+      .finally(() => {
+        setColor('#000000');
+        setName('');
+      });
   };
 
   return (

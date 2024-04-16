@@ -8,6 +8,7 @@ import { CarList } from '../../components/car-list';
 import { Car } from '../../types';
 
 import './garage.scss';
+import { garageService } from '../../services/garage-service';
 
 export const Garage = () => {
   const data = useLoaderData() as {
@@ -24,11 +25,14 @@ export const Garage = () => {
           buttonTitle="Create"
           nameId="create-car-name"
           colorId="create-car-color"
+          submitAction={garageService.createCar}
         />
         <CarForm
           buttonTitle="Update"
           nameId="update-car-name"
           colorId="update-car-color"
+          // change to updateCar method
+          submitAction={garageService.createCar}
         />
         <button type="button">Generate cars</button>
       </div>

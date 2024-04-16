@@ -1,5 +1,5 @@
-export interface Car {
+import { BasicCar } from './basic-car';
+
+export interface Car extends BasicCar {
   id: number;
-  name: string;
-  color: string;
 }
