@@ -4,6 +4,7 @@ import { garageService } from '../../services/garage-service';
 
 import './car-list.scss';
 import { Car } from '../../types';
+import { CarItem } from '../car-item';
 
 const SHOWED_ITEMS = 10;
 
@@ -33,7 +34,7 @@ export const CarList: React.FC<CarListProps> = ({ cars }) => {
   return (
     <div>
       {cars.map((car) => (
-        <div key={car.id}>{car.name}</div>
+        <CarItem key={car.id} car={car} />
       ))}
     </div>
   );
