@@ -2,6 +2,8 @@ import { App } from './App';
 import { Garage } from './pages/garage';
 import { Winners } from './pages/winners';
 
+import { garageLoader } from './components/car-list/CarList';
+
 export const routes = [
   {
     path: '/',
@@ -9,11 +11,8 @@ export const routes = [
     children: [
       {
         index: true,
-        element: <Garage />,
-      },
-      {
-        index: true,
         path: 'garage',
+        loader: garageLoader,
         element: <Garage />,
       },
       {
