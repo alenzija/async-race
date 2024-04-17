@@ -1,25 +1,12 @@
-import { Suspense } from 'react';
-import { Await, useLoaderData } from 'react-router-dom';
-
 import { CarForm } from '../../components/car-form';
-import { Spinner } from '../../components/spinner';
 import { CarList } from '../../components/car-list';
 import { GeneratedCarButton } from '../../components/generated-car-button';
 
 import { garageService } from '../../services/garage-service';
 
-import { Car } from '../../types';
-
 import './garage.scss';
 
 export const Garage = () => {
-  const data = useLoaderData() as {
-    res: {
-      count: number;
-      cars: Car[];
-    };
-  };
-
   return (
     <>
       <div>
@@ -38,11 +25,7 @@ export const Garage = () => {
         />
         <GeneratedCarButton />
       </div>
-      <Suspense fallback={<Spinner />}>
-        <Await resolve={data.res}>
-          {(res) => <CarList cars={res.data} count={res.count} />}
-        </Await>
-      </Suspense>
+      <CarList />
     </>
   );
 };

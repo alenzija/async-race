@@ -27,6 +27,9 @@ export const GeneratedCarButton = () => {
       const newCount = results.filter(
         (result) => result.status === 'rejected'
       ).length;
+      if (newCount === count) {
+        throw new Error('Something went wrong');
+      }
       if (newCount === 0) {
         return;
       }

@@ -1,8 +1,8 @@
 import { useContext, useEffect, useState } from 'react';
-import { defer } from 'react-router-dom';
-import { DeferredData } from '@remix-run/router/dist/utils';
 
 import { CarItem } from '../car-item';
+import { Spinner } from '../spinner';
+import { ErrorMessage } from '../error-message';
 
 import { useGetPage } from '../../hooks/useGetPage';
 
@@ -10,60 +10,60 @@ import { AppContext } from '../../app-context';
 
 import { garageService } from '../../services/garage-service';
 
-import { Car } from '../../types';
-
 import './car-list.scss';
 
 const SHOWED_ITEMS = 7;
 
-export const garageLoader = async ({
-  request,
-}: {
-  request: Request;
-}): Promise<DeferredData> => {
-  const url = new URL(request.url);
-  const page = url.searchParams.has('page')
-    ? +url.searchParams.get('page')!
-    : 1;
-
-  const res = garageService.getCars({ pageNumber: page, limit: SHOWED_ITEMS });
-  return defer({ res });
-};
-
-type CarListProps = {
-  cars: Car[];
-  count: number;
-};
-
-export const CarList: React.FC<CarListProps> = ({ cars, count }) => {
-  const [carList, setCarList] = useState(cars);
-  const [carsCount, setCarsCount] = useState(count);
-  const { responseStatus } = useContext(AppContext);
+export const CarList = () => {
+  const [state, setState] = useState<'idle' | 'loading' | 'error'>('idle');
+  const { responseStatus, cars, setCars, countCars, setCountCars } =
+    useContext(AppContext);
 
   const page = useGetPage();
 
   useEffect(() => {
-    if (!responseStatus) {
+    if (cars) {
       return;
     }
+    setState('loading');
     garageService
       .getCars({ pageNumber: page, limit: SHOWED_ITEMS })
       .then(({ data, count }) => {
-        setCarList(data);
-        setCarsCount(count);
+        setCars(data);
+        setCountCars(count);
+        setState('idle');
+      })
+      .catch(() => {
+        setState('error');
       });
-  }, [page, responseStatus]);
+  }, [setCars, setCountCars, cars, page]);
 
-  if (!cars) {
-    return null;
-  }
+  useEffect(() => {
+    if (responseStatus !== 'success') {
+      return;
+    }
+    setState('loading');
+    garageService
+      .getCars({ pageNumber: page, limit: SHOWED_ITEMS })
+      .then(({ data, count }) => {
+        setCars(data);
+        setCountCars(count);
+        setState('idle');
+      })
+      .catch(() => {
+        setState('error');
+      });
+  }, [setCars, setCountCars, responseStatus, page]);
+
   return (
     <>
-      <h3>{`Garage (${carsCount})`}</h3>
+      <h3>{`Garage (${countCars})`}</h3>
       <div>
-        {carList.map((car) => (
-          <CarItem key={car.id} car={car} />
-        ))}
+        {state === 'error' && <ErrorMessage />}
+        {state === 'loading' && <Spinner />}
+        {state === 'idle' &&
+          cars &&
+          cars.map((car) => <CarItem key={car.id} car={car} />)}
       </div>
     </>
   );

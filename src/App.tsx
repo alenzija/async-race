@@ -11,6 +11,8 @@ export const App = () => {
   );
   const [message, setMessage] = useState<string | null>(null);
   const [selectedCar, setSelectedCar] = useState<Car | null>(null);
+  const [cars, setCars] = useState<Car[] | null>(null);
+  const [countCars, setCountCars] = useState(0);
 
   useEffect(() => {
     if (!responseStatus) {
@@ -28,10 +30,14 @@ export const App = () => {
       value={{
         responseStatus,
         message,
+        selectedCar,
+        cars,
+        countCars,
         setResponseStatus,
         setMessage,
-        selectedCar,
         setSelectedCar,
+        setCars,
+        setCountCars,
       }}
     >
       <h1>Async Race</h1>
