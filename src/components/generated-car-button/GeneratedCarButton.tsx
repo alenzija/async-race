@@ -10,12 +10,19 @@ import { generateRandomCar } from '../../utils';
 
 import { Car } from '../../types';
 
-import { RANDOM_CARS_GENERATED_COUNT } from '../../consts';
+import { RANDOM_CARS_GENERATED_COUNT, SHOWED_CAR_ITEMS } from '../../consts';
 
 import './generated-car-button.scss';
 
 export const GeneratedCarButton = () => {
-  const { setResponseStatus, setMessage } = useContext(AppContext);
+  const {
+    setResponseStatus,
+    setMessage,
+    cars,
+    setCars,
+    setCountCars,
+    countCars,
+  } = useContext(AppContext);
   const [loading, setLoading] = useState(false);
 
   const generateCars = async (count: number) => {
@@ -24,16 +31,28 @@ export const GeneratedCarButton = () => {
       promises.push(garageService.createCar(generateRandomCar()));
     }
     return Promise.allSettled(promises).then((results) => {
-      const newCount = results.filter(
+      const rejectedResultsCount = results.filter(
         (result) => result.status === 'rejected'
       ).length;
-      if (newCount === count) {
+
+      const fulfilledResults = results
+        .map((result) =>
+          result.status === 'fulfilled'
+            ? result.value
+            : { id: -1, name: '', color: '' }
+        )
+        .filter((item) => item.id !== -1)
+        .slice(0, SHOWED_CAR_ITEMS - cars.length);
+      setCars([...cars, ...fulfilledResults]);
+      setCountCars(countCars + count - rejectedResultsCount);
+
+      if (rejectedResultsCount === count) {
         throw new Error('Something went wrong');
       }
-      if (newCount === 0) {
+      if (rejectedResultsCount === 0) {
         return;
       }
-      generateCars(newCount);
+      generateCars(rejectedResultsCount);
     });
   };
 

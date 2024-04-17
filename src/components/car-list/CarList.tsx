@@ -13,7 +13,6 @@ import './car-list.scss';
 
 export const CarList = () => {
   const {
-    responseStatus,
     cars,
     setCars,
     countCars,
@@ -23,24 +22,6 @@ export const CarList = () => {
     garageState,
     setGarageState,
   } = useContext(AppContext);
-
-  useEffect(() => {
-    if (responseStatus !== 'success') {
-      return;
-    }
-    console.log('updateStatus');
-    setGarageState('loading');
-    garageService
-      .getCars({ pageNumber: garagePage, limit: SHOWED_CAR_ITEMS })
-      .then(({ data, count }) => {
-        setCars(data);
-        setCountCars(count);
-        setGarageState('idle');
-      })
-      .catch(() => {
-        setGarageState('error');
-      });
-  }, [setCars, setCountCars, responseStatus, garagePage, setGarageState]);
 
   useEffect(() => {
     if (cars && cars.length === 0 && garagePage > 1) {

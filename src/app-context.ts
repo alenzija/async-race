@@ -6,14 +6,14 @@ type AppContextType = {
   responseStatus: ResponseStatus | null;
   message: string | null;
   selectedCar: Car | null;
-  cars: Car[] | null;
+  cars: Car[];
   countCars: number;
   garagePage: number;
   garageState: State;
   setResponseStatus: (value: ResponseStatus | null) => void;
   setMessage: (value: string | null) => void;
   setSelectedCar: (value: Car | null) => void
-  setCars: (value: Car[] | null) => void;
+  setCars: (value: Car[]) => void;
   setCountCars: (value: number) => void;
   setGaragePage: (value: number) => void;
   setGarageState: (value: State) => void;

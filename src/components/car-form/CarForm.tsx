@@ -18,7 +18,7 @@ type CarFormProps = {
   buttonTitle: 'Update' | 'Create';
   colorId: string;
   nameId: string;
-  submitAction: (data: Car) => Promise<Car>;
+  submitAction: (data: Car) => Promise<void>;
   defaultValue?: boolean;
 };
 
@@ -29,7 +29,7 @@ export const CarForm: React.FC<CarFormProps> = ({
   submitAction,
   defaultValue,
 }) => {
-  const { selectedCar, setMessage, setResponseStatus } = useContext(AppContext);
+  const { selectedCar } = useContext(AppContext);
   const [name, setName] = useState('');
   const [color, setColor] = useState('#000000');
   const [loading, setLoading] = useState(false);
@@ -59,20 +59,11 @@ export const CarForm: React.FC<CarFormProps> = ({
       id: defaultValue && selectedCar ? selectedCar.id : undefined,
       name,
       color,
-    })
-      .then(() => {
-        setResponseStatus('success');
-        setMessage(`Car was successfully ${buttonTitle.toLowerCase()}d`);
-      })
-      .catch(() => {
-        setResponseStatus('error');
-        setMessage('Something went wrong');
-      })
-      .finally(() => {
-        setColor('#000000');
-        setName('');
-        setLoading(false);
-      });
+    }).finally(() => {
+      setColor('#000000');
+      setName('');
+      setLoading(false);
+    });
   };
 
   return (

@@ -9,6 +9,8 @@ import { garageService } from '../../services/garage-service';
 
 import { Car } from '../../types';
 
+import { SHOWED_CAR_ITEMS } from '../../consts';
+
 import './car-item.scss';
 
 type CarItemProps = {
@@ -16,8 +18,14 @@ type CarItemProps = {
 };
 
 export const CarItem: React.FC<CarItemProps> = ({ car }) => {
-  const { setResponseStatus, setMessage, setSelectedCar } =
-    useContext(AppContext);
+  const {
+    setResponseStatus,
+    setMessage,
+    setSelectedCar,
+    garagePage,
+    setCars,
+    setCountCars,
+  } = useContext(AppContext);
   const [loading, setLoading] = useState(false);
 
   const onDelete = () => {
@@ -30,8 +38,18 @@ export const CarItem: React.FC<CarItemProps> = ({ car }) => {
     garageService
       .deleteCar(car.id)
       .then(() => {
-        setResponseStatus('success');
-        setMessage('The car was deleted');
+        garageService
+          .getCars({ pageNumber: garagePage, limit: SHOWED_CAR_ITEMS })
+          .then(({ data, count }) => {
+            setCars(data);
+            setCountCars(count);
+            setResponseStatus('success');
+            setMessage('The car was deleted');
+          })
+          .catch(() => {
+            setResponseStatus('error');
+            setMessage('Something went wrong');
+          });
       })
       .catch(() => {
         setResponseStatus('error');

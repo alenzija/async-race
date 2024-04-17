@@ -11,11 +11,50 @@ import { garageService } from '../../services/garage-service';
 
 import { SHOWED_CAR_ITEMS } from '../../consts';
 
+import { Car } from '../../types';
+
 import './garage.scss';
 
 export const Garage = () => {
-  const { countCars, garagePage, setGaragePage, garageState } =
-    useContext(AppContext);
+  const {
+    cars,
+    countCars,
+    setCountCars,
+    setCars,
+    garagePage,
+    setGaragePage,
+    garageState,
+    setResponseStatus,
+    setMessage,
+  } = useContext(AppContext);
+
+  const createCar = async (data: Car) => {
+    try {
+      const car = await garageService.createCar(data);
+      setResponseStatus('success');
+      setMessage('Car was successfully created');
+      setCountCars(countCars + 1);
+      if (cars.length < SHOWED_CAR_ITEMS) {
+        setCars([...cars, car]);
+      }
+    } catch {
+      setResponseStatus('error');
+      setMessage('Something went wrong');
+    }
+  };
+
+  const updateCar = async (data: Car) => {
+    try {
+      const car = await garageService.updateCar(data);
+      setResponseStatus('success');
+      setMessage('Car was successfully updated');
+      setCars(cars.map((item) => (car.id === item.id ? car : item)));
+    } catch {
+      setResponseStatus('error');
+      setMessage('Something went wrong');
+    }
+  };
+
   return (
     <>
       <div>
@@ -23,14 +62,14 @@ export const Garage = () => {
           buttonTitle="Create"
           nameId="create-car-name"
           colorId="create-car-color"
-          submitAction={garageService.createCar}
+          submitAction={createCar}
         />
         <CarForm
           buttonTitle="Update"
           nameId="update-car-name"
           colorId="update-car-color"
           defaultValue
-          submitAction={garageService.updateCar}
+          submitAction={updateCar}
         />
         <GeneratedCarButton />
       </div>

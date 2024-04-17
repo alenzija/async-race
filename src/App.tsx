@@ -13,7 +13,7 @@ export const App = () => {
   );
   const [message, setMessage] = useState<string | null>(null);
   const [selectedCar, setSelectedCar] = useState<Car | null>(null);
-  const [cars, setCars] = useState<Car[] | null>(null);
+  const [cars, setCars] = useState<Car[]>([]);
   const [countCars, setCountCars] = useState(0);
   const [garagePage, setGaragePage] = useState(1);
   const [garageState, setGarageState] = useState<State>('idle');
