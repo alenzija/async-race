@@ -26,6 +26,7 @@ export const Garage = () => {
     garageState,
     setResponseStatus,
     setMessage,
+    setSelectedCar,
   } = useContext(AppContext);
 
   const createCar = async (data: Car) => {
@@ -48,6 +49,7 @@ export const Garage = () => {
       const car = await garageService.updateCar(data);
       setResponseStatus('success');
       setMessage('Car was successfully updated');
+      setSelectedCar(null);
       setCars(cars.map((item) => (car.id === item.id ? car : item)));
     } catch {
       setResponseStatus('error');

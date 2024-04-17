@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useRef, useState } from 'react';
 
 import { CarIcon } from '../../shared/CarIcon';
 import { Spinner } from '../spinner';
@@ -27,13 +27,15 @@ export const CarItem: React.FC<CarItemProps> = ({ car }) => {
     garagePage,
     setCars,
     setCountCars,
+    cars,
   } = useContext(AppContext);
   const [loading, setLoading] = useState(false);
-  const [isAnimated, setIsAnimated] = useState(false);
+  const [isAnimated, setIsAnimated] = useState(car.isRun && !car.leftPosition);
   const [animationDuration, setAnimationDuration] = useState<number | null>(
     null
   );
   const [isAnimationPause, setIsAnimationPause] = useState(false);
+  const carRef = useRef<HTMLDivElement | null>(null);
 
   const onDelete = () => {
     if (!car.id) {
@@ -80,11 +82,14 @@ export const CarItem: React.FC<CarItemProps> = ({ car }) => {
     garageService
       .doStart(id)
       .then((time) => {
+        car.isRun = true;
+        setCars(cars.map((item) => (item.id === car.id ? car : item)));
         setAnimationDuration(time);
         setIsAnimated(true);
         garageService.doDrive(id, controller.signal).then((res) => {
           if (!res) {
             setIsAnimationPause(true);
+            handleAnimationEnd();
           }
         });
       })
@@ -104,6 +109,9 @@ export const CarItem: React.FC<CarItemProps> = ({ car }) => {
         setIsAnimated(false);
         setAnimationDuration(null);
         setIsAnimationPause(false);
+        car.isRun = false;
+        car.leftPosition = undefined;
+        setCars(cars.map((item) => (item.id === car.id ? car : item)));
       })
       .catch(() => {
         setResponseStatus('error');
@@ -111,6 +119,16 @@ export const CarItem: React.FC<CarItemProps> = ({ car }) => {
       });
   };
 
+  const handleAnimationEnd = () => {
+    if (!carRef.current || car.leftPosition) {
+      return;
+    }
+    const carPosition = carRef.current.getBoundingClientRect();
+    car.leftPosition = carPosition.left;
+    setCars(cars.map((item) => (item.id === car.id ? car : item)));
+  };
+
+  console.log(car);
   return (
     <div className="car-item">
       <button type="button" onClick={onDelete}>
@@ -120,15 +138,20 @@ export const CarItem: React.FC<CarItemProps> = ({ car }) => {
         Select
       </button>
       <div>{car.name}</div>
-      <button type="button" onClick={onStart} disabled={isAnimated}>
+      <button type="button" onClick={onStart} disabled={car.isRun}>
         A
       </button>
-      <button type="button" onClick={onStop} disabled={!isAnimated}>
+      <button type="button" onClick={onStop} disabled={!car.isRun}>
         B
       </button>
       <div
+        ref={carRef}
+        onAnimationEnd={handleAnimationEnd}
         className={`car-item__car-img ${isAnimated ? 'start' : ''} ${isAnimationPause ? 'pause' : ''}`}
-        style={{ animationDuration: `${animationDuration}ms` }}
+        style={{
+          animationDuration: `${animationDuration}ms`,
+          transform: `translateX(${car.leftPosition || 150}px)`,
+        }}
       >
         <CarIcon color={car.color} />
       </div>

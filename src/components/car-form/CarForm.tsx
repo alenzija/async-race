@@ -74,6 +74,7 @@ export const CarForm: React.FC<CarFormProps> = ({
         name={nameId}
         id={nameId}
         onChange={onNameChange}
+        disabled={defaultValue && !selectedCar}
       />
       <input
         type="color"
