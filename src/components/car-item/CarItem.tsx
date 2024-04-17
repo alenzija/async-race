@@ -11,6 +11,8 @@ import { Car } from '../../types';
 
 import { SHOWED_CAR_ITEMS } from '../../consts';
 
+import flag from '../../assets/img/flag.png';
+
 import './car-item.scss';
 
 type CarItemProps = {
@@ -27,6 +29,11 @@ export const CarItem: React.FC<CarItemProps> = ({ car }) => {
     setCountCars,
   } = useContext(AppContext);
   const [loading, setLoading] = useState(false);
+  const [isAnimated, setIsAnimated] = useState(false);
+  const [animationDuration, setAnimationDuration] = useState<number | null>(
+    null
+  );
+  const [isAnimationPause, setIsAnimationPause] = useState(false);
 
   const onDelete = () => {
     if (!car.id) {
@@ -64,8 +71,48 @@ export const CarItem: React.FC<CarItemProps> = ({ car }) => {
     setSelectedCar(car);
   };
 
+  const onStart = () => {
+    const id = car.id;
+    if (!id) {
+      return;
+    }
+    const controller = new AbortController();
+    garageService
+      .doStart(id)
+      .then((time) => {
+        setAnimationDuration(time);
+        setIsAnimated(true);
+        garageService.doDrive(id, controller.signal).then((res) => {
+          if (!res) {
+            setIsAnimationPause(true);
+          }
+        });
+      })
+      .catch(() => {
+        setResponseStatus('error');
+        setMessage('Something went wrong');
+      });
+  };
+
+  const onStop = () => {
+    if (!car.id) {
+      return;
+    }
+    garageService
+      .doStop(car.id)
+      .then(() => {
+        setIsAnimated(false);
+        setAnimationDuration(null);
+        setIsAnimationPause(false);
+      })
+      .catch(() => {
+        setResponseStatus('error');
+        setMessage('Something went wrong');
+      });
+  };
+
   return (
-    <div>
+    <div className="car-item">
       <button type="button" onClick={onDelete}>
         {loading ? <Spinner width="30px" /> : 'Remove'}
       </button>
@@ -73,8 +120,19 @@ export const CarItem: React.FC<CarItemProps> = ({ car }) => {
         Select
       </button>
       <div>{car.name}</div>
-      <CarIcon color={car.color} />
-      <div>..........</div>
+      <button type="button" onClick={onStart} disabled={isAnimated}>
+        A
+      </button>
+      <button type="button" onClick={onStop} disabled={!isAnimated}>
+        B
+      </button>
+      <div
+        className={`car-item__car-img ${isAnimated ? 'start' : ''} ${isAnimationPause ? 'pause' : ''}`}
+        style={{ animationDuration: `${animationDuration}ms` }}
+      >
+        <CarIcon color={car.color} />
+      </div>
+      <img src={flag} alt="flag" className="car-item__flag-img" />
     </div>
   );
 };

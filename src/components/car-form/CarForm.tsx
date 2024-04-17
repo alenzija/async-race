@@ -81,6 +81,7 @@ export const CarForm: React.FC<CarFormProps> = ({
         name={colorId}
         id={colorId}
         onChange={onColorChange}
+        disabled={defaultValue && !selectedCar}
       />
       <button
         type="submit"
