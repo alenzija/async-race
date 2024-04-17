@@ -3,7 +3,9 @@ import { Link, Outlet } from 'react-router-dom';
 
 import { AppContext } from './app-context';
 
-import { Car, ResponseStatus } from './types';
+import { Car, ResponseStatus, State } from './types';
+import { garageService } from './services/garage-service';
+import { SHOWED_CAR_ITEMS } from './consts';
 
 export const App = () => {
   const [responseStatus, setResponseStatus] = useState<ResponseStatus | null>(
@@ -13,6 +15,8 @@ export const App = () => {
   const [selectedCar, setSelectedCar] = useState<Car | null>(null);
   const [cars, setCars] = useState<Car[] | null>(null);
   const [countCars, setCountCars] = useState(0);
+  const [garagePage, setGaragePage] = useState(1);
+  const [garageState, setGarageState] = useState<State>('idle');
 
   useEffect(() => {
     if (!responseStatus) {
@@ -25,6 +29,20 @@ export const App = () => {
     return () => clearTimeout(timeoutId);
   }, [responseStatus]);
 
+  useEffect(() => {
+    setGarageState('loading');
+    garageService
+      .getCars({ pageNumber: garagePage, limit: SHOWED_CAR_ITEMS })
+      .then(({ data, count }) => {
+        setCars(data);
+        setCountCars(count);
+        setGarageState('idle');
+      })
+      .catch(() => {
+        setGarageState('error');
+      });
+  }, [setCars, setCountCars, garagePage]);
+
   return (
     <AppContext.Provider
       value={{
@@ -33,11 +51,15 @@ export const App = () => {
         selectedCar,
         cars,
         countCars,
+        garagePage,
+        garageState,
         setResponseStatus,
         setMessage,
         setSelectedCar,
         setCars,
         setCountCars,
+        setGaragePage,
+        setGarageState,
       }}
     >
       <h1>Async Race</h1>

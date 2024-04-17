@@ -1,35 +1,46 @@
-import { useGetPage } from '../../hooks/useGetPage';
+import { State } from '../../types';
 
 import './pagination.scss';
 
 type PaginationProps = {
   itemsCount: number;
   showedItems: number;
+  currentPage: number;
+  setPage: (value: number) => void;
+  state: State;
 };
 
 export const Pagination: React.FC<PaginationProps> = ({
   itemsCount,
   showedItems,
+  currentPage,
+  setPage,
+  state,
 }) => {
-  const { page, setPage } = useGetPage();
-
   const toPrevPage = () => {
-    setPage(page - 1);
+    setPage(currentPage - 1);
   };
 
   const toNextPage = () => {
-    setPage(page + 1);
+    setPage(currentPage + 1);
   };
 
   return (
     <div className="pagination">
-      <button type="button" disabled={page === 1} onClick={toPrevPage}>
-        {'<'}
-      </button>
-      <span>{page}</span>
       <button
         type="button"
-        disabled={page >= Math.ceil(itemsCount / showedItems)}
+        disabled={currentPage === 1 || state === 'loading'}
+        onClick={toPrevPage}
+      >
+        {'<'}
+      </button>
+      <span>{currentPage}</span>
+      <button
+        type="button"
+        disabled={
+          currentPage >= Math.ceil(itemsCount / showedItems) ||
+          state === 'loading'
+        }
         onClick={toNextPage}
       >
         {'>'}

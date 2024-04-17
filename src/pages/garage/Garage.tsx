@@ -9,11 +9,13 @@ import { AppContext } from '../../app-context';
 
 import { garageService } from '../../services/garage-service';
 
-import './garage.scss';
 import { SHOWED_CAR_ITEMS } from '../../consts';
 
+import './garage.scss';
+
 export const Garage = () => {
-  const { countCars } = useContext(AppContext);
+  const { countCars, garagePage, setGaragePage, garageState } =
+    useContext(AppContext);
   return (
     <>
       <div>
@@ -33,7 +35,13 @@ export const Garage = () => {
         <GeneratedCarButton />
       </div>
       <CarList />
-      <Pagination showedItems={SHOWED_CAR_ITEMS} itemsCount={countCars} />
+      <Pagination
+        showedItems={SHOWED_CAR_ITEMS}
+        itemsCount={countCars}
+        currentPage={garagePage}
+        setPage={setGaragePage}
+        state={garageState}
+      />
     </>
   );
 };

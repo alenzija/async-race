@@ -10,9 +10,9 @@ import { generateRandomCar } from '../../utils';
 
 import { Car } from '../../types';
 
-import './generated-car-button.scss';
+import { RANDOM_CARS_GENERATED_COUNT } from '../../consts';
 
-const RANDOM_CARS_COUNT = 100;
+import './generated-car-button.scss';
 
 export const GeneratedCarButton = () => {
   const { setResponseStatus, setMessage } = useContext(AppContext);
@@ -39,7 +39,7 @@ export const GeneratedCarButton = () => {
 
   const onGenerateCars = () => {
     setLoading(true);
-    generateCars(RANDOM_CARS_COUNT)
+    generateCars(RANDOM_CARS_GENERATED_COUNT)
       .then(() => {
         setResponseStatus('success');
         setMessage('The cars were been generated');

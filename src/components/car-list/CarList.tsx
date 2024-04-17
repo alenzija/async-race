@@ -1,11 +1,8 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect } from 'react';
 
 import { CarItem } from '../car-item';
 import { Spinner } from '../spinner';
 import { ErrorMessage } from '../error-message';
-
-import { useGetPage } from '../../hooks/useGetPage';
-
 import { AppContext } from '../../app-context';
 
 import { garageService } from '../../services/garage-service';
@@ -15,67 +12,60 @@ import { SHOWED_CAR_ITEMS } from '../../consts';
 import './car-list.scss';
 
 export const CarList = () => {
-  const [state, setState] = useState<'idle' | 'loading' | 'error'>('idle');
-  const { responseStatus, cars, setCars, countCars, setCountCars } =
-    useContext(AppContext);
-
-  const { page, setPage } = useGetPage();
-
-  useEffect(() => {
-    setState('loading');
-    garageService
-      .getCars({ pageNumber: page, limit: SHOWED_CAR_ITEMS })
-      .then(({ data, count }) => {
-        setCars(data);
-        setCountCars(count);
-        setState('idle');
-      })
-      .catch(() => {
-        setState('error');
-      });
-  }, [setCars, setCountCars, page]);
+  const {
+    responseStatus,
+    cars,
+    setCars,
+    countCars,
+    setCountCars,
+    garagePage,
+    setGaragePage,
+    garageState,
+    setGarageState,
+  } = useContext(AppContext);
 
   useEffect(() => {
     if (responseStatus !== 'success') {
       return;
     }
-    setState('loading');
+    console.log('updateStatus');
+    setGarageState('loading');
     garageService
-      .getCars({ pageNumber: page, limit: SHOWED_CAR_ITEMS })
+      .getCars({ pageNumber: garagePage, limit: SHOWED_CAR_ITEMS })
       .then(({ data, count }) => {
         setCars(data);
         setCountCars(count);
-        setState('idle');
+        setGarageState('idle');
       })
       .catch(() => {
-        setState('error');
+        setGarageState('error');
       });
-  }, [setCars, setCountCars, responseStatus, page]);
+  }, [setCars, setCountCars, responseStatus, garagePage, setGarageState]);
 
   useEffect(() => {
-    if (cars && cars.length === 0 && page > 1) {
-      setState('loading');
+    if (cars && cars.length === 0 && garagePage > 1) {
+      setGarageState('loading');
       garageService
-        .getCars({ pageNumber: page - 1, limit: SHOWED_CAR_ITEMS })
+        .getCars({ pageNumber: garagePage - 1, limit: SHOWED_CAR_ITEMS })
         .then(({ data, count }) => {
           setCars(data);
           setCountCars(count);
-          setState('idle');
-          setPage(page - 1);
+          setGarageState('idle');
+          setGaragePage(garagePage - 1);
         })
         .catch(() => {
-          setState('error');
+          setGarageState('error');
         });
     }
-  }, [cars, page, setPage, setCars, setCountCars]);
+  }, [cars, garagePage, setGaragePage, setCars, setCountCars, setGarageState]);
 
   return (
     <>
       <h3>{`Garage (${countCars})`}</h3>
       <div>
-        {state === 'error' && <ErrorMessage />}
-        {state === 'loading' && <Spinner />}
-        {state === 'idle' &&
+        {garageState === 'error' && <ErrorMessage />}
+        {garageState === 'loading' && <Spinner />}
+        {garageState === 'idle' &&
           cars &&
           cars.map((car) => <CarItem key={car.id} car={car} />)}
       </div>
