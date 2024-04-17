@@ -25,6 +25,8 @@ export const CarItem: React.FC<CarItemProps> = ({ car }) => {
       return;
     }
     setLoading(true);
+    setResponseStatus(null);
+    setMessage(null);
     garageService
       .deleteCar(car.id)
       .then(() => {

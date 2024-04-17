@@ -1,12 +1,19 @@
+import { useContext } from 'react';
+
 import { CarForm } from '../../components/car-form';
 import { CarList } from '../../components/car-list';
 import { GeneratedCarButton } from '../../components/generated-car-button';
+import { Pagination } from '../../components/pagination';
+
+import { AppContext } from '../../app-context';
 
 import { garageService } from '../../services/garage-service';
 
 import './garage.scss';
+import { SHOWED_CAR_ITEMS } from '../../consts';
 
 export const Garage = () => {
+  const { countCars } = useContext(AppContext);
   return (
     <>
       <div>
@@ -26,6 +33,7 @@ export const Garage = () => {
         <GeneratedCarButton />
       </div>
       <CarList />
+      <Pagination showedItems={SHOWED_CAR_ITEMS} itemsCount={countCars} />
     </>
   );
 };

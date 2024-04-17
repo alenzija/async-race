@@ -1,0 +1,1 @@
+export const SHOWED_CAR_ITEMS = 7;

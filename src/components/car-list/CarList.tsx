@@ -10,24 +10,21 @@ import { AppContext } from '../../app-context';
 
 import { garageService } from '../../services/garage-service';
 
-import './car-list.scss';
+import { SHOWED_CAR_ITEMS } from '../../consts';
 
-const SHOWED_ITEMS = 7;
+import './car-list.scss';
 
 export const CarList = () => {
   const [state, setState] = useState<'idle' | 'loading' | 'error'>('idle');
   const { responseStatus, cars, setCars, countCars, setCountCars } =
     useContext(AppContext);
 
-  const page = useGetPage();
+  const { page, setPage } = useGetPage();
 
   useEffect(() => {
-    if (cars) {
-      return;
-    }
     setState('loading');
     garageService
-      .getCars({ pageNumber: page, limit: SHOWED_ITEMS })
+      .getCars({ pageNumber: page, limit: SHOWED_CAR_ITEMS })
       .then(({ data, count }) => {
         setCars(data);
         setCountCars(count);
@@ -36,7 +33,7 @@ export const CarList = () => {
       .catch(() => {
         setState('error');
       });
-  }, [setCars, setCountCars, cars, page]);
+  }, [setCars, setCountCars, page]);
 
   useEffect(() => {
     if (responseStatus !== 'success') {
@@ -44,7 +41,7 @@ export const CarList = () => {
     }
     setState('loading');
     garageService
-      .getCars({ pageNumber: page, limit: SHOWED_ITEMS })
+      .getCars({ pageNumber: page, limit: SHOWED_CAR_ITEMS })
       .then(({ data, count }) => {
         setCars(data);
         setCountCars(count);
@@ -54,6 +51,23 @@ export const CarList = () => {
         setState('error');
       });
   }, [setCars, setCountCars, responseStatus, page]);
+
+  useEffect(() => {
+    if (cars && cars.length === 0 && page > 1) {
+      setState('loading');
+      garageService
+        .getCars({ pageNumber: page - 1, limit: SHOWED_CAR_ITEMS })
+        .then(({ data, count }) => {
+          setCars(data);
+          setCountCars(count);
+          setState('idle');
+          setPage(page - 1);
+        })
+        .catch(() => {
+          setState('error');
+        });
+    }
+  }, [cars, page, setPage, setCars, setCountCars]);
 
   return (
     <>
