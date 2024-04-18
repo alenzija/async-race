@@ -64,7 +64,9 @@ export const Garage = () => {
       setResponseStatus('success');
       setMessage('Car was successfully updated');
       setSelectedCar(null);
-      setCars(cars.map((item) => (car.id === item.id ? car : item)));
+      setCars(
+        cars.map((item) => (car.id === item.id ? { ...item, ...car } : item))
+      );
     } catch {
       setResponseStatus('error');
       setMessage('Something went wrong');
