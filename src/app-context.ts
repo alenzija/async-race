@@ -1,6 +1,6 @@
 import { createContext } from 'react';
 
-import { Car, RaceState, ResponseStatus, State } from './types';
+import { Car, Order, RaceState, ResponseStatus, Sort, State, Winner } from './types';
 
 type AppContextType = {
   responseStatus: ResponseStatus | null;
@@ -12,6 +12,12 @@ type AppContextType = {
   garageState: State;
   raceState: RaceState | null;
   finishedCar: Car | null;
+  winners: Winner[];
+  winnersCount: number;
+  winnersPage: number;
+  winnersState: State;
+  winnersOrder: Order;
+  winnersSort: Sort;
   setResponseStatus: (value: ResponseStatus | null) => void;
   setMessage: (value: string | null) => void;
   setSelectedCar: (value: Car | null) => void
@@ -21,6 +27,12 @@ type AppContextType = {
   setGarageState: (value: State) => void;
   setRaceState: (value: RaceState | null) => void;
   setFinishedCar: (value: Car | null) => void;
+  setWinners: (value: Winner[]) => void;
+  setWinnersCount: (value: number) => void;
+  setWinnersPage: (value: number) => void;
+  setWinnersState: (value: State) => void;
+  setWinnersOrder: (value: Order) => void;
+  setWinnersSort: (value: Sort) => void;
 }
 
 export const AppContext = createContext<AppContextType>({
@@ -33,6 +45,12 @@ export const AppContext = createContext<AppContextType>({
   garageState: 'idle',
   raceState: null,
   finishedCar: null,
+  winners: [],
+  winnersCount: 0,
+  winnersPage: 0,
+  winnersState: 'idle',
+  winnersOrder: Order.asc,
+  winnersSort: Sort.id,
   setResponseStatus: () => {},
   setMessage: () => {},
   setSelectedCar: () => {},
@@ -42,4 +60,10 @@ export const AppContext = createContext<AppContextType>({
   setGarageState: () => {},
   setRaceState: () => {},
   setFinishedCar: () => {},
+  setWinners: () => {},
+  setWinnersCount: () => {},
+  setWinnersPage: () => {},
+  setWinnersState: () => {},
+  setWinnersOrder: () => {},
+  setWinnersSort: () => {},
 });

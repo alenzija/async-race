@@ -4,10 +4,19 @@ import { Link, Outlet } from 'react-router-dom';
 import { AppContext } from './app-context';
 
 import { garageService } from './services/garage-service';
+import { winnerService } from './services/winner-service';
 
-import { Car, RaceState, ResponseStatus, State } from './types';
+import {
+  Car,
+  Order,
+  RaceState,
+  ResponseStatus,
+  Sort,
+  State,
+  Winner,
+} from './types';
 
-import { SHOWED_CAR_ITEMS } from './consts';
+import { SHOWED_CAR_ITEMS, SHOWED_WINNER_ITEMS } from './consts';
 
 export const App = () => {
   const [responseStatus, setResponseStatus] = useState<ResponseStatus | null>(
@@ -21,6 +30,12 @@ export const App = () => {
   const [garageState, setGarageState] = useState<State>('idle');
   const [raceState, setRaceState] = useState<RaceState | null>(null);
   const [finishedCar, setFinishedCar] = useState<Car | null>(null);
+  const [winners, setWinners] = useState<Winner[]>([]);
+  const [winnersCount, setWinnersCount] = useState(0);
+  const [winnersPage, setWinnersPage] = useState(0);
+  const [winnersState, setWinnersState] = useState<State>('idle');
+  const [winnersSort, setWinnersSort] = useState<Sort>(Sort.id);
+  const [winnersOrder, setWinnersOrder] = useState<Order>(Order.asc);
 
   useEffect(() => {
     if (!responseStatus) {
@@ -47,6 +62,25 @@ export const App = () => {
       });
   }, [setCars, setCountCars, garagePage]);
 
+  useEffect(() => {
+    setWinnersState('loading');
+    winnerService
+      .getWinners({
+        pageNumber: winnersPage,
+        limit: SHOWED_WINNER_ITEMS,
+        sort: winnersSort,
+        order: winnersOrder,
+      })
+      .then(({ data, count }) => {
+        setWinners(data);
+        setWinnersCount(count);
+        setWinnersState('idle');
+      })
+      .catch(() => {
+        setWinnersState('error');
+      });
+  }, [winnersPage, winnersOrder, winnersSort]);
+
   return (
     <AppContext.Provider
       value={{
@@ -59,6 +93,12 @@ export const App = () => {
         garageState,
         raceState,
         finishedCar,
+        winners,
+        winnersCount,
+        winnersPage,
+        winnersState,
+        winnersOrder,
+        winnersSort,
         setResponseStatus,
         setMessage,
         setSelectedCar,
@@ -68,6 +108,12 @@ export const App = () => {
         setGarageState,
         setRaceState,
         setFinishedCar,
+        setWinners,
+        setWinnersCount,
+        setWinnersPage,
+        setWinnersState,
+        setWinnersOrder,
+        setWinnersSort,
       }}
     >
       <h1>Async Race</h1>
