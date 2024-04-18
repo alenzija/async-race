@@ -1,1 +1,1 @@
-export type RaceState = 'start' | 'reset';
+export type RaceState = 'start'| 'hasWinner' | 'reset';

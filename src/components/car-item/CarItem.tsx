@@ -29,11 +29,11 @@ export const CarItem: React.FC<CarItemProps> = ({ car }) => {
     setCountCars,
     cars,
     raceState,
-    finishedCar,
+    setRaceState,
     setFinishedCar,
   } = useContext(AppContext);
   const [loading, setLoading] = useState(false);
-  const [isAnimated, setIsAnimated] = useState(car.isRun && !car.leftPosition);
+  const [isAnimated, setIsAnimated] = useState(false);
   const [isAnimationPause, setIsAnimationPause] = useState(false);
   const carRef = useRef<HTMLDivElement | null>(null);
 
@@ -134,7 +134,7 @@ export const CarItem: React.FC<CarItemProps> = ({ car }) => {
         setResponseStatus('error');
         setMessage('Something went wrong');
       });
-  }, [car, updateCars, setMessage, setResponseStatus]);
+  }, [car, setMessage, setResponseStatus, updateCars]);
 
   useEffect(() => {
     if (!raceState) {
@@ -154,8 +154,9 @@ export const CarItem: React.FC<CarItemProps> = ({ car }) => {
     }
     car.leftPosition = getLeftPosition();
     updateCars();
-    if (raceState === 'start' && !finishedCar) {
+    if (raceState === 'start') {
       setFinishedCar(car);
+      setRaceState('hasWinner');
     }
   };
 

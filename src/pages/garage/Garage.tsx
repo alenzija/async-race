@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 
 import { CarForm } from '../../components/car-form';
 import { CarList } from '../../components/car-list';
@@ -10,6 +10,7 @@ import { RaceForm } from '../../components/race-form';
 import { AppContext } from '../../app-context';
 
 import { garageService } from '../../services/garage-service';
+import { winnerService } from '../../services/winner-service';
 
 import { SHOWED_CAR_ITEMS } from '../../consts';
 
@@ -30,17 +31,61 @@ export const Garage = () => {
     setMessage,
     setSelectedCar,
     finishedCar,
+    winners,
+    setWinners,
+    setWinnersCount,
+    winnersCount,
+    setRaceState,
+    setFinishedCar,
   } = useContext(AppContext);
   const [isOpen, setIsOpen] = useState(false);
+
+  const updateWinners = useCallback(
+    (car: Car) => {
+      const { id, time } = car;
+      if (!id || !time) {
+        return;
+      }
+      winnerService.getWinner(id).then((winner) => {
+        if (winner) {
+          winnerService
+            .updateWinner({
+              id: car.id,
+              wins: winner.wins + 1,
+              time: winner.time <= time ? winner.time : time,
+            })
+            .then((updatedWinner) => {
+              setWinners(
+                winners.map((item) =>
+                  item.id === updatedWinner.id ? updatedWinner : item
+                )
+              );
+              setFinishedCar(null);
+            });
+        } else {
+          winnerService.createWinner({ id, wins: 1, time }).then((winner) => {
+            setWinners([...winners, winner]);
+            setWinnersCount(winnersCount + 1);
+            setFinishedCar(null);
+          });
+        }
+      });
+    },
+    [setFinishedCar, setWinners, setWinnersCount, winners, winnersCount]
+  );
 
   useEffect(() => {
     if (finishedCar) {
       setIsOpen(true);
+      setRaceState('hasWinner');
     }
-  }, [finishedCar]);
+  }, [finishedCar, setRaceState]);
 
   const onClose = () => {
     setIsOpen(false);
+    if (finishedCar) {
+      updateWinners(finishedCar);
+    }
   };
 
   const createCar = async (data: Car) => {

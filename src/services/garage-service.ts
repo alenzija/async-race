@@ -24,6 +24,13 @@ class GarageService {
     return { count, data };
   };
 
+  public getCar = async (id: number): Promise<Car> => {
+    const res = await fetch(`${this.garageUrl}/${id}?id=${id}`);
+    const data = await res.json() as Car;
+    return data;
+  };
+
+
   public createCar = async (body: Car): Promise<Car> => {
     const res = await fetch(this.garageUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
     const data = await res.json() as Car;
