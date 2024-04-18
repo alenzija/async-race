@@ -1,17 +1,17 @@
 .modal-wrapper {
-  position: absolute;
+  position: fixed;
   inset: 0;
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #c9c9c9;
-  opacity: 0.7;
+  background-color: rgba(201, 201, 201, 0.738);
 
   .modal {
     width: 30%;
     padding: 20px;
     border-radius: 10px;
     background-color: #ffffff;
+    opacity: 1;
     box-shadow: 0 0 5px 5px 3px #a5a5a5;
   }
 }

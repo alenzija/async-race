@@ -5,6 +5,7 @@ import { CarList } from '../../components/car-list';
 import { GeneratedCarButton } from '../../components/generated-car-button';
 import { Pagination } from '../../components/pagination';
 import { Modal } from '../../components/modal';
+import { RaceForm } from '../../components/race-form';
 
 import { AppContext } from '../../app-context';
 
@@ -88,6 +89,7 @@ export const Garage = () => {
         />
         <GeneratedCarButton />
       </div>
+      <RaceForm />
       <CarList />
       <Pagination
         showedItems={SHOWED_CAR_ITEMS}

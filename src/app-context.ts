@@ -1,6 +1,6 @@
 import { createContext } from 'react';
 
-import { Car, ResponseStatus, State } from './types';
+import { Car, RaceState, ResponseStatus, State } from './types';
 
 type AppContextType = {
   responseStatus: ResponseStatus | null;
@@ -10,6 +10,7 @@ type AppContextType = {
   countCars: number;
   garagePage: number;
   garageState: State;
+  raceState: RaceState | null;
   finishedCar: Car | null;
   setResponseStatus: (value: ResponseStatus | null) => void;
   setMessage: (value: string | null) => void;
@@ -18,6 +19,7 @@ type AppContextType = {
   setCountCars: (value: number) => void;
   setGaragePage: (value: number) => void;
   setGarageState: (value: State) => void;
+  setRaceState: (value: RaceState | null) => void;
   setFinishedCar: (value: Car | null) => void;
 }
 
@@ -29,6 +31,7 @@ export const AppContext = createContext<AppContextType>({
   countCars: 0,
   garagePage: 1,
   garageState: 'idle',
+  raceState: null,
   finishedCar: null,
   setResponseStatus: () => {},
   setMessage: () => {},
@@ -37,5 +40,6 @@ export const AppContext = createContext<AppContextType>({
   setCountCars: () => {},
   setGaragePage: () => {},
   setGarageState: () => {},
+  setRaceState: () => {},
   setFinishedCar: () => {},
 });

@@ -1,4 +1,4 @@
-import { useContext, useRef, useState } from 'react';
+import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 
 import { CarIcon } from '../../shared/CarIcon';
 import { Spinner } from '../spinner';
@@ -28,20 +28,18 @@ export const CarItem: React.FC<CarItemProps> = ({ car }) => {
     setCars,
     setCountCars,
     cars,
+    raceState,
     finishedCar,
     setFinishedCar,
   } = useContext(AppContext);
   const [loading, setLoading] = useState(false);
   const [isAnimated, setIsAnimated] = useState(car.isRun && !car.leftPosition);
-  const [animationDuration, setAnimationDuration] = useState<number | null>(
-    null
-  );
   const [isAnimationPause, setIsAnimationPause] = useState(false);
   const carRef = useRef<HTMLDivElement | null>(null);
 
-  const updateCars = () => {
+  const updateCars = useCallback(() => {
     setCars(cars.map((item) => (item.id === car.id ? car : item)));
-  };
+  }, [car, cars, setCars]);
 
   const onDelete = () => {
     if (!car.id) {
@@ -79,18 +77,27 @@ export const CarItem: React.FC<CarItemProps> = ({ car }) => {
     setSelectedCar(car);
   };
 
-  const onStart = () => {
+  const getLeftPosition = useCallback(() => {
+    if (!carRef.current || car.leftPosition) {
+      return;
+    }
+    const carPosition = carRef.current.getBoundingClientRect();
+    return carPosition.left;
+  }, [car.leftPosition]);
+
+  const onStart = useCallback(() => {
     const id = car.id;
     if (!id) {
       return;
     }
+    car.isRun = true;
     const controller = new AbortController();
     garageService
       .doStart(id)
       .then((time) => {
-        car.isRun = true;
+        car.time = Math.round(time / 10) / 100;
+        car.isReadyToStart = false;
         updateCars();
-        setAnimationDuration(time);
         setIsAnimated(true);
         garageService.doDrive(id, controller.signal).then((res) => {
           if (!res) {
@@ -101,47 +108,53 @@ export const CarItem: React.FC<CarItemProps> = ({ car }) => {
         });
       })
       .catch(() => {
+        car.isRun = false;
         setResponseStatus('error');
         setMessage('Something went wrong');
       });
-  };
+  }, [car, getLeftPosition, setMessage, setResponseStatus, updateCars]);
 
-  const onStop = () => {
+  const onStop = useCallback(() => {
     if (!car.id) {
       return;
     }
+    car.isRun = false;
     garageService
       .doStop(car.id)
       .then(() => {
         setIsAnimated(false);
-        setAnimationDuration(null);
         setIsAnimationPause(false);
-        car.isRun = false;
+        car.time = undefined;
         car.leftPosition = undefined;
+        car.isReadyToStart = true;
         updateCars();
       })
       .catch(() => {
+        car.isRun = true;
         setResponseStatus('error');
         setMessage('Something went wrong');
       });
-  };
+  }, [car, updateCars, setMessage, setResponseStatus]);
 
-  const getLeftPosition = () => {
-    if (!carRef.current || car.leftPosition) {
+  useEffect(() => {
+    if (!raceState) {
       return;
     }
-    const carPosition = carRef.current.getBoundingClientRect();
-    return carPosition.left;
-  };
+    if (raceState === 'start' && !car.isRun) {
+      onStart();
+    }
+    if (raceState === 'reset' && car.isRun) {
+      onStop();
+    }
+  }, [raceState, onStart, onStop, car.isRun]);
 
   const handleAnimationEnd = () => {
-    if (!animationDuration) {
+    if (!car.time) {
       return;
     }
     car.leftPosition = getLeftPosition();
-    car.time = Math.round(animationDuration / 10) / 100;
     updateCars();
-    if (!finishedCar) {
+    if (raceState === 'start' && !finishedCar) {
       setFinishedCar(car);
     }
   };
@@ -155,7 +168,13 @@ export const CarItem: React.FC<CarItemProps> = ({ car }) => {
         Select
       </button>
       <div>{car.name}</div>
-      <button type="button" onClick={onStart} disabled={car.isRun}>
+      <button
+        type="button"
+        onClick={onStart}
+        disabled={
+          !(car.isReadyToStart === undefined || car.isReadyToStart === true)
+        }
+      >
         A
       </button>
       <button type="button" onClick={onStop} disabled={!car.isRun}>
@@ -166,7 +185,7 @@ export const CarItem: React.FC<CarItemProps> = ({ car }) => {
         onAnimationEnd={handleAnimationEnd}
         className={`car-item__car-img ${isAnimated ? 'start' : ''} ${isAnimationPause ? 'pause' : ''}`}
         style={{
-          animationDuration: `${animationDuration}ms`,
+          animationDuration: `${car.time}s`,
           transform: `translateX(${(car.leftPosition || 150) - 10}px)`,
         }}
       >

@@ -5,4 +5,5 @@ export interface Car {
   leftPosition?: number;
   isRun?: boolean;
   time?: number;
+  isReadyToStart?: boolean;
 }

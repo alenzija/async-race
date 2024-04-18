@@ -3,8 +3,10 @@ import { Link, Outlet } from 'react-router-dom';
 
 import { AppContext } from './app-context';
 
-import { Car, ResponseStatus, State } from './types';
 import { garageService } from './services/garage-service';
+
+import { Car, RaceState, ResponseStatus, State } from './types';
+
 import { SHOWED_CAR_ITEMS } from './consts';
 
 export const App = () => {
@@ -17,6 +19,7 @@ export const App = () => {
   const [countCars, setCountCars] = useState(0);
   const [garagePage, setGaragePage] = useState(1);
   const [garageState, setGarageState] = useState<State>('idle');
+  const [raceState, setRaceState] = useState<RaceState | null>(null);
   const [finishedCar, setFinishedCar] = useState<Car | null>(null);
 
   useEffect(() => {
@@ -54,6 +57,7 @@ export const App = () => {
         countCars,
         garagePage,
         garageState,
+        raceState,
         finishedCar,
         setResponseStatus,
         setMessage,
@@ -62,6 +66,7 @@ export const App = () => {
         setCountCars,
         setGaragePage,
         setGarageState,
+        setRaceState,
         setFinishedCar,
       }}
     >
