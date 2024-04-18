@@ -17,6 +17,7 @@ export const App = () => {
   const [countCars, setCountCars] = useState(0);
   const [garagePage, setGaragePage] = useState(1);
   const [garageState, setGarageState] = useState<State>('idle');
+  const [finishedCar, setFinishedCar] = useState<Car | null>(null);
 
   useEffect(() => {
     if (!responseStatus) {
@@ -53,6 +54,7 @@ export const App = () => {
         countCars,
         garagePage,
         garageState,
+        finishedCar,
         setResponseStatus,
         setMessage,
         setSelectedCar,
@@ -60,6 +62,7 @@ export const App = () => {
         setCountCars,
         setGaragePage,
         setGarageState,
+        setFinishedCar,
       }}
     >
       <h1>Async Race</h1>

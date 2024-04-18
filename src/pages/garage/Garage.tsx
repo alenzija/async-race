@@ -1,9 +1,10 @@
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 import { CarForm } from '../../components/car-form';
 import { CarList } from '../../components/car-list';
 import { GeneratedCarButton } from '../../components/generated-car-button';
 import { Pagination } from '../../components/pagination';
+import { Modal } from '../../components/modal';
 
 import { AppContext } from '../../app-context';
 
@@ -27,7 +28,19 @@ export const Garage = () => {
     setResponseStatus,
     setMessage,
     setSelectedCar,
+    finishedCar,
   } = useContext(AppContext);
+  const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    if (finishedCar) {
+      setIsOpen(true);
+    }
+  }, [finishedCar]);
+
+  const onClose = () => {
+    setIsOpen(false);
+  };
 
   const createCar = async (data: Car) => {
     try {
@@ -83,6 +96,11 @@ export const Garage = () => {
         setPage={setGaragePage}
         state={garageState}
       />
+      {finishedCar && (
+        <Modal isOpen={isOpen} onClose={onClose}>
+          <div>{`${finishedCar.name} ----  ${finishedCar.time}`}</div>
+        </Modal>
+      )}
     </>
   );
 };

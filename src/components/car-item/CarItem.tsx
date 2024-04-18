@@ -28,6 +28,8 @@ export const CarItem: React.FC<CarItemProps> = ({ car }) => {
     setCars,
     setCountCars,
     cars,
+    finishedCar,
+    setFinishedCar,
   } = useContext(AppContext);
   const [loading, setLoading] = useState(false);
   const [isAnimated, setIsAnimated] = useState(car.isRun && !car.leftPosition);
@@ -36,6 +38,10 @@ export const CarItem: React.FC<CarItemProps> = ({ car }) => {
   );
   const [isAnimationPause, setIsAnimationPause] = useState(false);
   const carRef = useRef<HTMLDivElement | null>(null);
+
+  const updateCars = () => {
+    setCars(cars.map((item) => (item.id === car.id ? car : item)));
+  };
 
   const onDelete = () => {
     if (!car.id) {
@@ -83,13 +89,14 @@ export const CarItem: React.FC<CarItemProps> = ({ car }) => {
       .doStart(id)
       .then((time) => {
         car.isRun = true;
-        setCars(cars.map((item) => (item.id === car.id ? car : item)));
+        updateCars();
         setAnimationDuration(time);
         setIsAnimated(true);
         garageService.doDrive(id, controller.signal).then((res) => {
           if (!res) {
             setIsAnimationPause(true);
-            handleAnimationEnd();
+            car.leftPosition = getLeftPosition();
+            updateCars();
           }
         });
       })
@@ -111,7 +118,7 @@ export const CarItem: React.FC<CarItemProps> = ({ car }) => {
         setIsAnimationPause(false);
         car.isRun = false;
         car.leftPosition = undefined;
-        setCars(cars.map((item) => (item.id === car.id ? car : item)));
+        updateCars();
       })
       .catch(() => {
         setResponseStatus('error');
@@ -119,16 +126,26 @@ export const CarItem: React.FC<CarItemProps> = ({ car }) => {
       });
   };
 
-  const handleAnimationEnd = () => {
+  const getLeftPosition = () => {
     if (!carRef.current || car.leftPosition) {
       return;
     }
     const carPosition = carRef.current.getBoundingClientRect();
-    car.leftPosition = carPosition.left;
-    setCars(cars.map((item) => (item.id === car.id ? car : item)));
+    return carPosition.left;
   };
 
-  console.log(car);
+  const handleAnimationEnd = () => {
+    if (!animationDuration) {
+      return;
+    }
+    car.leftPosition = getLeftPosition();
+    car.time = Math.round(animationDuration / 10) / 100;
+    updateCars();
+    if (!finishedCar) {
+      setFinishedCar(car);
+    }
+  };
+
   return (
     <div className="car-item">
       <button type="button" onClick={onDelete}>
@@ -150,7 +167,7 @@ export const CarItem: React.FC<CarItemProps> = ({ car }) => {
         className={`car-item__car-img ${isAnimated ? 'start' : ''} ${isAnimationPause ? 'pause' : ''}`}
         style={{
           animationDuration: `${animationDuration}ms`,
-          transform: `translateX(${car.leftPosition || 150}px)`,
+          transform: `translateX(${(car.leftPosition || 150) - 10}px)`,
         }}
       >
         <CarIcon color={car.color} />

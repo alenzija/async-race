@@ -4,4 +4,5 @@ export interface Car {
   color: string;
   leftPosition?: number;
   isRun?: boolean;
+  time?: number;
 }

@@ -10,6 +10,7 @@ type AppContextType = {
   countCars: number;
   garagePage: number;
   garageState: State;
+  finishedCar: Car | null;
   setResponseStatus: (value: ResponseStatus | null) => void;
   setMessage: (value: string | null) => void;
   setSelectedCar: (value: Car | null) => void
@@ -17,6 +18,7 @@ type AppContextType = {
   setCountCars: (value: number) => void;
   setGaragePage: (value: number) => void;
   setGarageState: (value: State) => void;
+  setFinishedCar: (value: Car | null) => void;
 }
 
 export const AppContext = createContext<AppContextType>({
@@ -27,6 +29,7 @@ export const AppContext = createContext<AppContextType>({
   countCars: 0,
   garagePage: 1,
   garageState: 'idle',
+  finishedCar: null,
   setResponseStatus: () => {},
   setMessage: () => {},
   setSelectedCar: () => {},
@@ -34,4 +37,5 @@ export const AppContext = createContext<AppContextType>({
   setCountCars: () => {},
   setGaragePage: () => {},
   setGarageState: () => {},
+  setFinishedCar: () => {},
 });
