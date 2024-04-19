@@ -32,10 +32,42 @@ export const App = () => {
   const [finishedCar, setFinishedCar] = useState<Car | null>(null);
   const [winners, setWinners] = useState<Winner[]>([]);
   const [winnersCount, setWinnersCount] = useState(0);
-  const [winnersPage, setWinnersPage] = useState(0);
+  const [winnersPage, setWinnersPage] = useState(1);
   const [winnersState, setWinnersState] = useState<State>('idle');
   const [winnersSort, setWinnersSort] = useState<Sort>(Sort.id);
   const [winnersOrder, setWinnersOrder] = useState<Order>(Order.asc);
+
+  useEffect(() => {
+    if (countCars === 0 || winnersCount === 0) {
+      return;
+    }
+
+    let newWinners = winners.map((winner) => {
+      if (!winner.id) {
+        return winner;
+      }
+      const car = cars.find((item) => item.id === winner.id);
+      return car ? { ...winner, color: car.color, name: car.name } : winner;
+    });
+    if (newWinners.every((item) => item.name)) {
+      setWinners(newWinners);
+      return;
+    }
+    const promises = newWinners
+      .filter((item) => !item.name && item.id)
+      .map((winner) => garageService.getCar(winner.id!));
+    Promise.allSettled(promises).then((responseArr) => {
+      responseArr.forEach((res) => {
+        if (res.status === 'fulfilled') {
+          const car = res.value;
+          newWinners = newWinners.map((winner) =>
+            winner.id === car.id ? { ...winner, ...car } : winner
+          );
+        }
+      });
+      setWinners(newWinners);
+    });
+  }, [cars, countCars, winnersCount, winners]);
 
   useEffect(() => {
     if (!responseStatus) {
@@ -50,6 +82,7 @@ export const App = () => {
 
   useEffect(() => {
     setGarageState('loading');
+    setRaceState(null);
     garageService
       .getCars({ pageNumber: garagePage, limit: SHOWED_CAR_ITEMS })
       .then(({ data, count }) => {
@@ -76,10 +109,11 @@ export const App = () => {
         setWinnersCount(count);
         setWinnersState('idle');
       })
+      .then(() => {})
       .catch(() => {
         setWinnersState('error');
       });
-  }, [winnersPage, winnersOrder, winnersSort]);
+  }, [winnersPage, winnersOrder, winnersSort, winnersCount]);
 
   return (
     <AppContext.Provider

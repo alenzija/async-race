@@ -37,8 +37,9 @@ class WinnersService {
     return winner;
   };
 
-  public deleteWinner = async (id: number): Promise<void> => {
-    await fetch(`${this.url}/${id}?id=${id}`, { method: 'DELETE' });
+  public deleteWinner = async (id: number): Promise<boolean> => {
+    const res = await fetch(`${this.url}/${id}?id=${id}`, { method: 'DELETE' });
+    return res.ok;
   };
 }
 

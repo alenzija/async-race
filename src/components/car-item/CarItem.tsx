@@ -34,6 +34,8 @@ export const CarItem: React.FC<CarItemProps> = ({ car }) => {
     setFinishedCar,
     setWinners,
     winners,
+    setWinnersCount,
+    winnersCount,
   } = useContext(AppContext);
   const [loading, setLoading] = useState(false);
   const [isAnimated, setIsAnimated] = useState(false);
@@ -61,8 +63,13 @@ export const CarItem: React.FC<CarItemProps> = ({ car }) => {
       setCountCars(count);
       setResponseStatus('success');
       setMessage('The car was deleted');
-      await winnerService.deleteWinner(car.id);
-      setWinners(winners.filter((item) => item.id !== car.id));
+      const status = await winnerService.deleteWinner(car.id);
+      if (status) {
+        if (winners.some((item) => item.id === car.id)) {
+          setWinners(winners.filter((item) => item.id !== car.id));
+        }
+        setWinnersCount(winnersCount - 1);
+      }
     } catch {
       setResponseStatus('error');
       setMessage('Something went wrong');
