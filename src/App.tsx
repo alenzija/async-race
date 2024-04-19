@@ -42,30 +42,30 @@ export const App = () => {
       return;
     }
 
-    let newWinners = winners.map((winner) => {
-      if (!winner.id) {
-        return winner;
-      }
-      const car = cars.find((item) => item.id === winner.id);
-      return car ? { ...winner, color: car.color, name: car.name } : winner;
-    });
-    if (newWinners.every((item) => item.name)) {
-      setWinners(newWinners);
-      return;
-    }
-    const promises = newWinners
+    // let newWinners = winners.map((winner) => {
+    //   if (!winner.id) {
+    //     return winner;
+    //   }
+    //   const car = cars.find((item) => item.id === winner.id);
+    //   return car ? { ...winner, color: car.color, name: car.name } : winner;
+    // });
+    // if (newWinners.every((item) => item.name)) {
+    //   return;
+    // }
+    const promises = winners
       .filter((item) => !item.name && item.id)
       .map((winner) => garageService.getCar(winner.id!));
     Promise.allSettled(promises).then((responseArr) => {
+      let updatedWinners: Winner[];
       responseArr.forEach((res) => {
         if (res.status === 'fulfilled') {
           const car = res.value;
-          newWinners = newWinners.map((winner) =>
+          updatedWinners = winners.map((winner) =>
             winner.id === car.id ? { ...winner, ...car } : winner
           );
         }
+        setWinners(updatedWinners);
       });
-      setWinners(newWinners);
     });
   }, [cars, countCars, winnersCount, winners]);
 
