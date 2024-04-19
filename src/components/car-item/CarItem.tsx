@@ -145,8 +145,9 @@ export const CarItem: React.FC<CarItemProps> = ({ car }) => {
     }
     if (raceState === 'reset' && car.isRun) {
       onStop();
+      setRaceState(null);
     }
-  }, [raceState, onStart, onStop, car.isRun]);
+  }, [raceState, onStart, onStop, car.isRun, setRaceState]);
 
   const handleAnimationEnd = () => {
     if (!car.time) {
