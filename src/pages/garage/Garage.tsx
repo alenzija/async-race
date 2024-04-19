@@ -112,6 +112,9 @@ export const Garage = () => {
       setCars(
         cars.map((item) => (car.id === item.id ? { ...item, ...car } : item))
       );
+      setWinners(
+        winners.map((item) => (item.id === car.id ? { ...item, ...car } : item))
+      );
     } catch {
       setResponseStatus('error');
       setMessage('Something went wrong');

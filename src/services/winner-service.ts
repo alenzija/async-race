@@ -36,6 +36,10 @@ class WinnersService {
     const winner = await res.json() as Winner;
     return winner;
   };
+
+  public deleteWinner = async (id: number): Promise<void> => {
+    await fetch(`${this.url}/${id}?id=${id}`, { method: 'DELETE' });
+  };
 }
 
 export const winnerService = new WinnersService();

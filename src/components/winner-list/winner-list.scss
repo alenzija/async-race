@@ -1,0 +1,16 @@
+.winners {
+  width: 500px;
+
+  & > div:first-child,
+  &__body > * {
+    display: grid;
+    grid-template-columns: 65px 75px 150px 60px 105px;
+    align-items: center;
+    justify-items: start;
+  }
+
+  &__header {
+    padding: 10px 0;
+    background-color: #f0f8ff;
+  }
+}

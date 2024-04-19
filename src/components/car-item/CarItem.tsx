@@ -6,6 +6,7 @@ import { Spinner } from '../spinner';
 import { AppContext } from '../../app-context';
 
 import { garageService } from '../../services/garage-service';
+import { winnerService } from '../../services/winner-service';
 
 import { Car } from '../../types';
 
@@ -31,6 +32,8 @@ export const CarItem: React.FC<CarItemProps> = ({ car }) => {
     raceState,
     setRaceState,
     setFinishedCar,
+    setWinners,
+    winners,
   } = useContext(AppContext);
   const [loading, setLoading] = useState(false);
   const [isAnimated, setIsAnimated] = useState(false);
@@ -41,36 +44,31 @@ export const CarItem: React.FC<CarItemProps> = ({ car }) => {
     setCars(cars.map((item) => (item.id === car.id ? car : item)));
   }, [car, cars, setCars]);
 
-  const onDelete = () => {
+  const onDelete = async () => {
     if (!car.id) {
       return;
     }
     setLoading(true);
     setResponseStatus(null);
     setMessage(null);
-    garageService
-      .deleteCar(car.id)
-      .then(() => {
-        garageService
-          .getCars({ pageNumber: garagePage, limit: SHOWED_CAR_ITEMS })
-          .then(({ data, count }) => {
-            setCars(data);
-            setCountCars(count);
-            setResponseStatus('success');
-            setMessage('The car was deleted');
-          })
-          .catch(() => {
-            setResponseStatus('error');
-            setMessage('Something went wrong');
-          });
-      })
-      .catch(() => {
-        setResponseStatus('error');
-        setMessage('Something went wrong');
-      })
-      .finally(() => {
-        setLoading(false);
+    try {
+      await garageService.deleteCar(car.id);
+      const { data, count } = await garageService.getCars({
+        pageNumber: garagePage,
+        limit: SHOWED_CAR_ITEMS,
       });
+      setCars(data);
+      setCountCars(count);
+      setResponseStatus('success');
+      setMessage('The car was deleted');
+      await winnerService.deleteWinner(car.id);
+      setWinners(winners.filter((item) => item.id !== car.id));
+    } catch {
+      setResponseStatus('error');
+      setMessage('Something went wrong');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const onSelect = () => {
