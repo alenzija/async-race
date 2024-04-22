@@ -1,11 +1,9 @@
 .winners {
-  width: 500px;
-
   & > div:first-child,
   &__body > * {
     display: grid;
     padding: 5px;
-    grid-template-columns: 65px 75px 200px 60px 145px;
+    grid-template-columns: 10% 15% 35% 15% 15%;
     align-items: center;
     justify-items: start;
   }

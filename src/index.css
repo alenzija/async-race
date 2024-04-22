@@ -68,9 +68,3 @@ button:focus-visible {
 input[type='color'] {
   cursor: pointer;
 }
-
-.alert {
-  position: fixed;
-  top: 10px;
-  right: 20px;
-}

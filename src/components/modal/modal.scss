@@ -1,13 +1,15 @@
 .modal-wrapper {
   position: fixed;
   inset: 0;
+  z-index: 100;
   display: flex;
   justify-content: center;
   align-items: center;
   background-color: rgba(201, 201, 201, 0.738);
 
   .modal {
-    width: 30%;
+    width: max-content;
+    max-width: 70%;
     padding: 20px;
     border-radius: 10px;
     background-color: #ffffff;

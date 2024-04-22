@@ -63,7 +63,7 @@ export const WinnerList = () => {
                 (winnersOrder === Order.asc ? ' ↓' : ' ↑')}
             </div>
             <div onClick={onTimeSortToggle}>
-              Best Time, s
+              Best Time (s)
               {winnersSort === Sort.time &&
                 (winnersOrder === Order.asc ? ' ↓' : ' ↑')}
             </div>

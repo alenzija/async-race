@@ -13,9 +13,9 @@ export const WinnerItem: React.FC<WinnerItemProps> = ({ winner }) => {
     <div className="winner">
       <div>{winner.id}</div>
       <div>
-        <CarIcon color={winner.color} size={30} />
+        <CarIcon color={winner.color} size={40} />
       </div>
-      <div>{winner.name || 'Without name'}</div>
+      <div>{winner.name || ''}</div>
       <div>{winner.wins}</div>
       <div>{winner.time}</div>
     </div>

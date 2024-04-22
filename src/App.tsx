@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Outlet } from 'react-router-dom';
 
 import { Nav } from './components/nav';
+import { StatusMessage } from './components/status-message';
 
 import { AppContext } from './app-context';
 
@@ -59,17 +60,6 @@ export const App = () => {
       });
     });
   }, [cars, countCars, winnersCount, winners]);
-
-  useEffect(() => {
-    if (!responseStatus) {
-      return;
-    }
-    const timeoutId = setTimeout(() => {
-      setResponseStatus(null);
-      setMessage(null);
-    }, 3000);
-    return () => clearTimeout(timeoutId);
-  }, [responseStatus]);
 
   useEffect(() => {
     setGarageState('loading');
@@ -144,7 +134,7 @@ export const App = () => {
       <h1>Async Race</h1>
       <Nav />
       <Outlet />
-      <div className="alert">{message}</div>
+      <StatusMessage />
     </AppContext.Provider>
   );
 };

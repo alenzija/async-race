@@ -1,0 +1,37 @@
+.status-message {
+  display: flex;
+  position: fixed;
+  padding: 0.5rem;
+  top: 10px;
+  right: 20px;
+  align-items: center;
+  opacity: 0.95;
+  border-radius: 4px 8px 8px 4px;
+  animation: 3s linear hidden forwards;
+
+  &__error {
+    background-color: #fff8f4;
+  }
+
+  &__success {
+    background-color: #f4fdf9;
+    border-left: 3px solid #27ae60;
+  }
+}
+
+@keyframes hidden {
+  0% {
+    visibility: 'visible';
+    opacity: 0.95;
+  }
+  60% {
+    opacity: 0.95;
+  }
+  75% {
+    opacity: 0.5;
+  }
+  100% {
+    visibility: 'hidden';
+    opacity: 0;
+  }
+}

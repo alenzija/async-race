@@ -12,6 +12,8 @@ import { AppContext } from '../../app-context';
 import { garageService } from '../../services/garage-service';
 import { winnerService } from '../../services/winner-service';
 
+import { getOrdinalAdverb } from '../../utils';
+
 import { SHOWED_CAR_ITEMS } from '../../consts';
 
 import { Car } from '../../types';
@@ -39,6 +41,7 @@ export const Garage = () => {
     setFinishedCar,
   } = useContext(AppContext);
   const [isOpen, setIsOpen] = useState(false);
+  const [wins, setWins] = useState<number>(0);
 
   const updateWinners = useCallback(
     (car: Car) => {
@@ -61,12 +64,14 @@ export const Garage = () => {
                 )
               );
               setFinishedCar(null);
+              setWins(0);
             });
         } else {
           winnerService.createWinner({ id, wins: 1, time }).then((winner) => {
             setWinners([...winners, winner]);
             setWinnersCount(winnersCount + 1);
             setFinishedCar(null);
+            setWins(0);
           });
         }
       });
@@ -75,9 +80,16 @@ export const Garage = () => {
   );
 
   useEffect(() => {
-    if (finishedCar) {
-      setIsOpen(true);
-      setRaceState('hasWinner');
+    if (finishedCar && finishedCar.id) {
+      winnerService.getWinner(finishedCar.id).then((winner) => {
+        if (winner) {
+          setWins(winner.wins + 1);
+        } else {
+          setWins(1);
+        }
+        setIsOpen(true);
+        setRaceState('hasWinner');
+      });
     }
   }, [finishedCar, setRaceState]);
 
@@ -92,7 +104,7 @@ export const Garage = () => {
     try {
       const car = await garageService.createCar(data);
       setResponseStatus('success');
-      setMessage('Car was successfully created');
+      setMessage('The car was successfully created');
       setCountCars(countCars + 1);
       if (cars.length < SHOWED_CAR_ITEMS) {
         setCars([...cars, car]);
@@ -107,7 +119,7 @@ export const Garage = () => {
     try {
       const car = await garageService.updateCar(data);
       setResponseStatus('success');
-      setMessage('Car was successfully updated');
+      setMessage('The car was successfully updated');
       setSelectedCar(null);
       setCars(
         cars.map((item) => (car.id === item.id ? { ...item, ...car } : item))
@@ -150,7 +162,7 @@ export const Garage = () => {
       </div>
       {finishedCar && (
         <Modal isOpen={isOpen} onClose={onClose}>
-          <div>{`${finishedCar.name} ----  ${finishedCar.time}`}</div>
+          <div>{`${finishedCar.name} won ${getOrdinalAdverb(wins)} [${finishedCar.time}]`}</div>
         </Modal>
       )}
     </>
