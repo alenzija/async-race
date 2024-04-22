@@ -5,7 +5,6 @@ import { Pagination } from '../../components/pagination';
 
 import { AppContext } from '../../app-context';
 
-import './winners.scss';
 import { SHOWED_WINNER_ITEMS } from '../../consts';
 
 export const Winners = () => {
@@ -14,7 +13,7 @@ export const Winners = () => {
 
   return (
     <>
-      <div>{`Winners(${winnersCount})`}</div>
+      <h3>{`Winners (${winnersCount})`}</h3>
       <WinnerList />
       <Pagination
         currentPage={winnersPage}

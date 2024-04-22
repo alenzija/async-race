@@ -4,13 +4,14 @@
   & > div:first-child,
   &__body > * {
     display: grid;
-    grid-template-columns: 65px 75px 150px 60px 105px;
+    padding: 5px;
+    grid-template-columns: 65px 75px 200px 60px 145px;
     align-items: center;
     justify-items: start;
   }
 
   &__header {
-    padding: 10px 0;
+    padding: 10px 5px;
     background-color: #f0f8ff;
   }
 }
