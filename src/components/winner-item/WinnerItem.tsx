@@ -1,4 +1,4 @@
-import { CarIcon } from '../../shared/CarIcon';
+import { CarIcon } from '../../shared/icons';
 
 import { Winner } from '../../types';
 

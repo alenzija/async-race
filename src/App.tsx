@@ -41,17 +41,6 @@ export const App = () => {
     if (countCars === 0 || winnersCount === 0) {
       return;
     }
-
-    // let newWinners = winners.map((winner) => {
-    //   if (!winner.id) {
-    //     return winner;
-    //   }
-    //   const car = cars.find((item) => item.id === winner.id);
-    //   return car ? { ...winner, color: car.color, name: car.name } : winner;
-    // });
-    // if (newWinners.every((item) => item.name)) {
-    //   return;
-    // }
     const promises = winners
       .filter((item) => !item.name && item.id)
       .map((winner) => garageService.getCar(winner.id!));

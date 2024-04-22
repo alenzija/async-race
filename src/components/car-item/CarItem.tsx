@@ -1,7 +1,7 @@
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 
-import { CarIcon } from '../../shared/CarIcon';
 import { Spinner } from '../spinner';
+import { EditIcon, RemoveIcon, CarIcon } from '../../shared/icons';
 
 import { AppContext } from '../../app-context';
 
@@ -37,7 +37,9 @@ export const CarItem: React.FC<CarItemProps> = ({ car }) => {
     setWinnersCount,
     winnersCount,
   } = useContext(AppContext);
-  const [loading, setLoading] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [startLoading, setStartLoading] = useState(false);
+  const [stopLoading, setStopLoading] = useState(false);
   const [isAnimated, setIsAnimated] = useState(false);
   const [isAnimationPause, setIsAnimationPause] = useState(false);
   const carRef = useRef<HTMLDivElement | null>(null);
@@ -50,7 +52,7 @@ export const CarItem: React.FC<CarItemProps> = ({ car }) => {
     if (!car.id) {
       return;
     }
-    setLoading(true);
+    setDeleteLoading(true);
     setResponseStatus(null);
     setMessage(null);
     try {
@@ -74,7 +76,7 @@ export const CarItem: React.FC<CarItemProps> = ({ car }) => {
       setResponseStatus('error');
       setMessage('Something went wrong');
     } finally {
-      setLoading(false);
+      setDeleteLoading(false);
     }
   };
 
@@ -97,6 +99,7 @@ export const CarItem: React.FC<CarItemProps> = ({ car }) => {
     }
     car.isRun = true;
     const controller = new AbortController();
+    setStartLoading(true);
     garageService
       .doStart(id)
       .then((time) => {
@@ -104,6 +107,7 @@ export const CarItem: React.FC<CarItemProps> = ({ car }) => {
         car.isReadyToStart = false;
         updateCars();
         setIsAnimated(true);
+        setStartLoading(false);
         garageService.doDrive(id, controller.signal).then((res) => {
           if (!res) {
             setIsAnimationPause(true);
@@ -116,6 +120,9 @@ export const CarItem: React.FC<CarItemProps> = ({ car }) => {
         car.isRun = false;
         setResponseStatus('error');
         setMessage('Something went wrong');
+      })
+      .finally(() => {
+        setStopLoading(false);
       });
   }, [car, getLeftPosition, setMessage, setResponseStatus, updateCars]);
 
@@ -124,6 +131,7 @@ export const CarItem: React.FC<CarItemProps> = ({ car }) => {
       return;
     }
     car.isRun = false;
+    setStopLoading(true);
     garageService
       .doStop(car.id)
       .then(() => {
@@ -138,6 +146,9 @@ export const CarItem: React.FC<CarItemProps> = ({ car }) => {
         car.isRun = true;
         setResponseStatus('error');
         setMessage('Something went wrong');
+      })
+      .finally(() => {
+        setStopLoading(false);
       });
   }, [car, setMessage, setResponseStatus, updateCars]);
 
@@ -168,32 +179,50 @@ export const CarItem: React.FC<CarItemProps> = ({ car }) => {
 
   return (
     <div className="car-item">
-      <button type="button" onClick={onDelete}>
-        {loading ? <Spinner width="30px" /> : 'Remove'}
-      </button>
-      <button type="button" onClick={onSelect}>
-        Select
-      </button>
-      <div>{car.name}</div>
-      <button
-        type="button"
-        onClick={onStart}
-        disabled={
-          !(car.isReadyToStart === undefined || car.isReadyToStart === true)
-        }
-      >
-        A
-      </button>
-      <button type="button" onClick={onStop} disabled={!car.isRun}>
-        B
-      </button>
+      <div className="car-item__header">
+        <div>{car.name}</div>
+        <button
+          type="button"
+          onClick={onDelete}
+          className="car-item__header--button"
+        >
+          {deleteLoading ? <Spinner size={20} /> : <RemoveIcon />}
+        </button>
+        <button
+          type="button"
+          onClick={onSelect}
+          className="car-item__header--button"
+        >
+          <EditIcon />
+        </button>
+      </div>
+      <div className="car-item__race-menu">
+        <button
+          type="button"
+          onClick={onStart}
+          disabled={
+            !(car.isReadyToStart === undefined || car.isReadyToStart === true)
+          }
+          className="car-item__race-menu--button"
+        >
+          {startLoading ? <Spinner size={20} /> : 'A'}
+        </button>
+        <button
+          type="button"
+          onClick={onStop}
+          disabled={!car.isRun}
+          className="car-item__race-menu--button"
+        >
+          {stopLoading ? <Spinner size={20} /> : 'B'}
+        </button>
+      </div>
       <div
         ref={carRef}
         onAnimationEnd={handleAnimationEnd}
         className={`car-item__car-img ${isAnimated ? 'start' : ''} ${isAnimationPause ? 'pause' : ''}`}
         style={{
           animationDuration: `${car.time}s`,
-          transform: `translateX(${(car.leftPosition || 150) - 10}px)`,
+          transform: `translateX(${(car.leftPosition || 90) - 10}px)`,
         }}
       >
         <CarIcon color={car.color} />
