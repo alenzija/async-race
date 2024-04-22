@@ -123,7 +123,7 @@ export const Garage = () => {
 
   return (
     <>
-      <div>
+      <div className="garage">
         <CarForm
           buttonTitle="Create"
           nameId="create-car-name"
@@ -138,16 +138,16 @@ export const Garage = () => {
           submitAction={updateCar}
         />
         <GeneratedCarButton />
+        <RaceForm />
+        <CarList />
+        <Pagination
+          showedItems={SHOWED_CAR_ITEMS}
+          itemsCount={countCars}
+          currentPage={garagePage}
+          setPage={setGaragePage}
+          state={garageState}
+        />
       </div>
-      <RaceForm />
-      <CarList />
-      <Pagination
-        showedItems={SHOWED_CAR_ITEMS}
-        itemsCount={countCars}
-        currentPage={garagePage}
-        setPage={setGaragePage}
-        state={garageState}
-      />
       {finishedCar && (
         <Modal isOpen={isOpen} onClose={onClose}>
           <div>{`${finishedCar.name} ----  ${finishedCar.time}`}</div>

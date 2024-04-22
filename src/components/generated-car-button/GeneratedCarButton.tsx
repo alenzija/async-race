@@ -71,8 +71,8 @@ export const GeneratedCarButton = () => {
   };
 
   return (
-    <button type="button" onClick={onGenerateCars}>
-      {loading ? <Spinner width="30px" /> : 'Generate cars'}
+    <button type="button" onClick={onGenerateCars} className="generate-button">
+      {loading ? <Spinner size={20} /> : 'Generate cars'}
     </button>
   );
 };

@@ -67,7 +67,7 @@ export const CarForm: React.FC<CarFormProps> = ({
   };
 
   return (
-    <form onSubmit={onSubmit}>
+    <form onSubmit={onSubmit} className="form">
       <input
         type="text"
         value={name}
@@ -75,6 +75,7 @@ export const CarForm: React.FC<CarFormProps> = ({
         id={nameId}
         onChange={onNameChange}
         disabled={defaultValue && !selectedCar}
+        className="form__input--text"
       />
       <input
         type="color"
@@ -83,12 +84,14 @@ export const CarForm: React.FC<CarFormProps> = ({
         id={colorId}
         onChange={onColorChange}
         disabled={defaultValue && !selectedCar}
+        className="form__input--color"
       />
       <button
         type="submit"
         disabled={(defaultValue && !selectedCar) || !name || name === ''}
+        className="form__button"
       >
-        {loading ? <Spinner width="30px" /> : buttonTitle}
+        {loading ? <Spinner size={30} /> : buttonTitle}
       </button>
     </form>
   );

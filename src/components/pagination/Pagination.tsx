@@ -31,10 +31,11 @@ export const Pagination: React.FC<PaginationProps> = ({
         type="button"
         disabled={currentPage === 1 || state === 'loading'}
         onClick={toPrevPage}
+        className="pagination--button"
       >
         {'<'}
       </button>
-      <span>{currentPage}</span>
+      <div className="pagination--button">{currentPage}</div>
       <button
         type="button"
         disabled={
@@ -42,6 +43,7 @@ export const Pagination: React.FC<PaginationProps> = ({
           state === 'loading'
         }
         onClick={toNextPage}
+        className="pagination--button"
       >
         {'>'}
       </button>

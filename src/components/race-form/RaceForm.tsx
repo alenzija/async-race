@@ -23,11 +23,12 @@ export const RaceForm = () => {
   }, [garagePage, setFinishedCar, setRaceState]);
 
   return (
-    <div>
+    <div className="race-form">
       <button
         disabled={cars.some((car) => car.isReadyToStart === false)}
         type="button"
         onClick={onRace}
+        className="race-form--button"
       >
         Race
       </button>
@@ -35,6 +36,7 @@ export const RaceForm = () => {
         disabled={!cars.every((car) => car.isRun)}
         type="button"
         onClick={onReset}
+        className="race-form--button"
       >
         Reset
       </button>
