@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Link, Outlet } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
+
+import { Nav } from './components/nav';
 
 import { AppContext } from './app-context';
 
@@ -140,8 +142,7 @@ export const App = () => {
       }}
     >
       <h1>Async Race</h1>
-      <Link to="/garage">To garage</Link>
-      <Link to="/winners">To winners</Link>
+      <Nav />
       <Outlet />
       <div className="alert">{message}</div>
     </AppContext.Provider>
