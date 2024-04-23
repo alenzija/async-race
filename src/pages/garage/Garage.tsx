@@ -160,7 +160,7 @@ export const Garage = () => {
       </div>
       {finishedCar && (
         <Modal isOpen={isOpen} onClose={onClose}>
-          <div>{`${finishedCar.name} won ${getOrdinalAdverb(winner?.wins || 0 + 1)} [${finishedCar.time}]`}</div>
+          <div>{`${finishedCar.name} won ${getOrdinalAdverb((winner?.wins || 0) + 1)} [${finishedCar.time}]`}</div>
         </Modal>
       )}
     </>

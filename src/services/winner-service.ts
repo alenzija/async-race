@@ -3,6 +3,10 @@ import { Order, Sort, Winner } from '../types';
 class WinnersService {
   private url = 'http://127.0.0.1:3000/winners';
 
+  private readonly headers = new Headers({
+    'Content-Type': 'application/json',
+   });
+
   public getWinners = async ({ pageNumber, limit, sort, order} : {
     pageNumber: number;
     limit: number;
@@ -25,14 +29,14 @@ class WinnersService {
   };
 
   public createWinner = async (body: Winner): Promise<Winner> => {
-    const res = await fetch(this.url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    const res = await fetch(this.url, { method: 'POST', headers: this.headers, body: JSON.stringify(body) });
     const winner = await res.json() as Winner;
     return winner;
   };
 
   public updateWinner = async (data: Winner): Promise<Winner> => {
     const { id, ...body } = data;
-    const res = await fetch(`${this.url}/${id}?id=${id}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    const res = await fetch(`${this.url}/${id}?id=${id}`, { method: 'PUT', headers: this.headers, body: JSON.stringify(body) });
     const winner = await res.json() as Winner;
     return winner;
   };
