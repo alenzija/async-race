@@ -16,6 +16,8 @@ import flag from '../../assets/img/flag.png';
 
 import './car-item.scss';
 
+const START_LEFT_POSITION = 90;
+
 type CarItemProps = {
   car: Car;
 };
@@ -43,9 +45,10 @@ export const CarItem: React.FC<CarItemProps> = ({ car }) => {
   const [isAnimated, setIsAnimated] = useState(false);
   const [isAnimationPause, setIsAnimationPause] = useState(false);
   const carRef = useRef<HTMLDivElement | null>(null);
+  const carState = useRef<Car>(car);
 
   const updateCars = useCallback(() => {
-    setCars(cars.map((item) => (item.id === car.id ? car : item)));
+    setCars(cars.map((item) => (item.id === car.id ? carState.current : item)));
   }, [car, cars, setCars]);
 
   const onDelete = async () => {
@@ -85,39 +88,39 @@ export const CarItem: React.FC<CarItemProps> = ({ car }) => {
   };
 
   const getLeftPosition = useCallback(() => {
-    if (!carRef.current || car.leftPosition) {
+    if (!carRef.current) {
       return;
     }
     const carPosition = carRef.current.getBoundingClientRect();
     return carPosition.left;
-  }, [car.leftPosition]);
+  }, []);
 
   const onStart = useCallback(() => {
     const id = car.id;
     if (!id) {
       return;
     }
-    car.isRun = true;
+    carState.current.isRun = true;
     const controller = new AbortController();
     setStartLoading(true);
     garageService
       .doStart(id)
       .then((time) => {
-        car.time = Math.round(time / 10) / 100;
-        car.isReadyToStart = false;
+        carState.current.time = Math.round(time / 10) / 100;
+        carState.current.isReadyToStart = false;
         updateCars();
         setIsAnimated(true);
         setStartLoading(false);
         garageService.doDrive(id, controller.signal).then((res) => {
           if (!res) {
             setIsAnimationPause(true);
-            car.leftPosition = getLeftPosition();
+            carState.current.leftPosition = getLeftPosition();
             updateCars();
           }
         });
       })
       .catch(() => {
-        car.isRun = false;
+        carState.current.isRun = false;
         setResponseStatus('error');
         setMessage('Something went wrong');
       })
@@ -130,20 +133,20 @@ export const CarItem: React.FC<CarItemProps> = ({ car }) => {
     if (!car.id) {
       return;
     }
-    car.isRun = false;
+    carState.current.isRun = false;
     setStopLoading(true);
     garageService
       .doStop(car.id)
       .then(() => {
         setIsAnimated(false);
         setIsAnimationPause(false);
-        car.time = undefined;
-        car.leftPosition = undefined;
-        car.isReadyToStart = true;
+        carState.current.time = undefined;
+        carState.current.leftPosition = undefined;
+        carState.current.isReadyToStart = true;
         updateCars();
       })
       .catch(() => {
-        car.isRun = true;
+        carState.current.isRun = true;
         setResponseStatus('error');
         setMessage('Something went wrong');
       })
@@ -169,7 +172,7 @@ export const CarItem: React.FC<CarItemProps> = ({ car }) => {
     if (!car.time) {
       return;
     }
-    car.leftPosition = getLeftPosition();
+    carState.current.leftPosition = getLeftPosition();
     updateCars();
     if (raceState === 'start') {
       setFinishedCar(car);
@@ -222,7 +225,7 @@ export const CarItem: React.FC<CarItemProps> = ({ car }) => {
         className={`car-item__car-img ${isAnimated ? 'start' : ''} ${isAnimationPause ? 'pause' : ''}`}
         style={{
           animationDuration: `${car.time}s`,
-          transform: `translateX(${(car.leftPosition || 90) - 10}px)`,
+          transform: `translateX(${(car.leftPosition || START_LEFT_POSITION) - 10}px)`,
         }}
       >
         <CarIcon color={car.color} />

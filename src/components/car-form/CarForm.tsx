@@ -14,6 +14,8 @@ import { AppContext } from '../../app-context';
 
 import './car-form.scss';
 
+const DEFAULT_COLOR = '#000000';
+
 type CarFormProps = {
   buttonTitle: 'Update' | 'Create';
   colorId: string;
@@ -31,7 +33,7 @@ export const CarForm: React.FC<CarFormProps> = ({
 }) => {
   const { selectedCar } = useContext(AppContext);
   const [name, setName] = useState('');
-  const [color, setColor] = useState('#000000');
+  const [color, setColor] = useState(DEFAULT_COLOR);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -60,7 +62,7 @@ export const CarForm: React.FC<CarFormProps> = ({
       name,
       color,
     }).finally(() => {
-      setColor('#000000');
+      setColor(DEFAULT_COLOR);
       setName('');
       setLoading(false);
     });

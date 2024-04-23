@@ -36,30 +36,30 @@ export const App = () => {
   const [winners, setWinners] = useState<Winner[]>([]);
   const [winnersCount, setWinnersCount] = useState(0);
   const [winnersPage, setWinnersPage] = useState(1);
-  const [winnersState, setWinnersState] = useState<State>('idle');
   const [winnersSort, setWinnersSort] = useState<Sort>(Sort.id);
   const [winnersOrder, setWinnersOrder] = useState<Order>(Order.asc);
+  const [winnersState, setWinnersState] = useState<State>('idle');
 
   useEffect(() => {
-    if (countCars === 0 || winnersCount === 0) {
-      return;
-    }
     const promises = winners
       .filter((item) => !item.name && item.id)
       .map((winner) => garageService.getCar(winner.id!));
+    if (promises.length === 0) {
+      return;
+    }
     Promise.allSettled(promises).then((responseArr) => {
-      let updatedWinners: Winner[];
+      let updatedWinners = winners;
       responseArr.forEach((res) => {
         if (res.status === 'fulfilled') {
           const car = res.value;
-          updatedWinners = winners.map((winner) =>
+          updatedWinners = updatedWinners.map((winner) =>
             winner.id === car.id ? { ...winner, ...car } : winner
           );
         }
-        setWinners(updatedWinners);
       });
+      setWinners(updatedWinners);
     });
-  }, [cars, countCars, winnersCount, winners]);
+  }, [winners]);
 
   useEffect(() => {
     setGarageState('loading');
@@ -90,11 +90,10 @@ export const App = () => {
         setWinnersCount(count);
         setWinnersState('idle');
       })
-      .then(() => {})
       .catch(() => {
         setWinnersState('error');
       });
-  }, [winnersPage, winnersOrder, winnersSort, winnersCount]);
+  }, [winnersPage, winnersOrder, winnersSort]);
 
   return (
     <AppContext.Provider

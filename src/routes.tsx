@@ -10,7 +10,6 @@ export const routes = [
     errorElement: <Page404 />,
     children: [
       {
-        index: true,
         path: 'garage',
         element: <Garage />,
       },

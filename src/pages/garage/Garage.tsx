@@ -16,7 +16,7 @@ import { getOrdinalAdverb } from '../../utils';
 
 import { SHOWED_CAR_ITEMS } from '../../consts';
 
-import { Car } from '../../types';
+import { Car, Winner } from '../../types';
 
 import './garage.scss';
 
@@ -41,7 +41,7 @@ export const Garage = () => {
     setFinishedCar,
   } = useContext(AppContext);
   const [isOpen, setIsOpen] = useState(false);
-  const [wins, setWins] = useState<number>(0);
+  const [winner, setWinner] = useState<Winner | null>(null);
 
   const updateWinners = useCallback(
     (car: Car) => {
@@ -49,43 +49,39 @@ export const Garage = () => {
       if (!id || !time) {
         return;
       }
-      winnerService.getWinner(id).then((winner) => {
-        if (winner) {
-          winnerService
-            .updateWinner({
-              id: car.id,
-              wins: winner.wins + 1,
-              time: winner.time <= time ? winner.time : time,
-            })
-            .then((updatedWinner) => {
-              setWinners(
-                winners.map((item) =>
-                  item.id === updatedWinner.id ? updatedWinner : item
-                )
-              );
-              setFinishedCar(null);
-              setWins(0);
-            });
-        } else {
-          winnerService.createWinner({ id, wins: 1, time }).then((winner) => {
-            setWinners([...winners, winner]);
-            setWinnersCount(winnersCount + 1);
+      if (winner) {
+        winnerService
+          .updateWinner({
+            id: car.id,
+            wins: winner.wins + 1,
+            time: winner.time <= time ? winner.time : time,
+          })
+          .then((updatedWinner) => {
+            setWinners(
+              winners.map((item) =>
+                item.id === updatedWinner.id ? updatedWinner : item
+              )
+            );
             setFinishedCar(null);
-            setWins(0);
+            setWinner(null);
           });
-        }
-      });
+      } else {
+        winnerService.createWinner({ id, wins: 1, time }).then((winner) => {
+          setWinners([...winners, winner]);
+          setWinnersCount(winnersCount + 1);
+          setFinishedCar(null);
+          setWinner(null);
+        });
+      }
     },
-    [setFinishedCar, setWinners, setWinnersCount, winners, winnersCount]
+    [setFinishedCar, setWinners, setWinnersCount, winners, winnersCount, winner]
   );
 
   useEffect(() => {
     if (finishedCar && finishedCar.id) {
       winnerService.getWinner(finishedCar.id).then((winner) => {
         if (winner) {
-          setWins(winner.wins + 1);
-        } else {
-          setWins(1);
+          setWinner(winner);
         }
         setIsOpen(true);
         setRaceState('hasWinner');
@@ -137,12 +133,14 @@ export const Garage = () => {
     <>
       <div className="garage">
         <CarForm
+          key="createCarName"
           buttonTitle="Create"
           nameId="create-car-name"
           colorId="create-car-color"
           submitAction={createCar}
         />
         <CarForm
+          key="createCarColor"
           buttonTitle="Update"
           nameId="update-car-name"
           colorId="update-car-color"
@@ -162,7 +160,7 @@ export const Garage = () => {
       </div>
       {finishedCar && (
         <Modal isOpen={isOpen} onClose={onClose}>
-          <div>{`${finishedCar.name} won ${getOrdinalAdverb(wins)} [${finishedCar.time}]`}</div>
+          <div>{`${finishedCar.name} won ${getOrdinalAdverb(winner?.wins || 0 + 1)} [${finishedCar.time}]`}</div>
         </Modal>
       )}
     </>
