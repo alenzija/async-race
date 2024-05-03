@@ -1,0 +1,9 @@
+.race-form {
+  display: flex;
+  gap: 0.3rem;
+
+  &--button {
+    border: 1px solid #9a9a9a;
+    border-radius: 8px;
+  }
+}

@@ -1,0 +1,19 @@
+.modal-wrapper {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(201, 201, 201, 0.738);
+
+  .modal {
+    width: max-content;
+    max-width: 70%;
+    padding: 20px;
+    border-radius: 10px;
+    background-color: #ffffff;
+    opacity: 1;
+    box-shadow: 0 0 5px 5px 3px #a5a5a5;
+  }
+}

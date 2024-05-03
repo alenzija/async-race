@@ -1,0 +1,15 @@
+.winners {
+  & > div:first-child,
+  &__body > * {
+    display: grid;
+    padding: 5px;
+    grid-template-columns: 10% 15% 35% 15% 15%;
+    align-items: center;
+    justify-items: start;
+  }
+
+  &__header {
+    padding: 10px 5px;
+    background-color: #f0f8ff;
+  }
+}

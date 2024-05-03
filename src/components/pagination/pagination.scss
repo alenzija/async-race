@@ -1,0 +1,16 @@
+.pagination {
+  display: flex;
+  margin-top: 1rem;
+  align-items: center;
+  gap: 0.3rem;
+
+  &--button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid #9a9a9a;
+    border-radius: 50%;
+  }
+}
